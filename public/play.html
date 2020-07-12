@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html{width:100%;height:100%;font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}body{margin:0;width:100%;height:100%;}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}
+        input,button,select,textarea{outline:none}textarea{resize:none}a{text-decoration:none;color:#000}ul{padding-left:0;list-style:none;}
+        u2-player{width:100%;height:100%}
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/combine/npm/vue@2.6.11/dist/vue.min.js,npm/axios@0.19.2/dist/axios.min.js,gh/suconghou/assets@656ab79/fastload.min.js,gh/suconghou/assets@656ab79/u2-player.min.js"></script>
+    <u2-player id="player"></u2-player>
+    <script>
+        const parseQuery = str => {
+            if (!str) {
+                return {};
+            }
+            const pairs = (str[0] === '?' ? str.substr(1) : str).split('&');
+            const params = {};
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i].split('=');
+                params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+            }
+            return params;
+        };
+        const query = parseQuery(location.search)
+        if(!query.v){
+            document.body.innerHTML='<p align="center">参数错误</p>';
+        }else{
+            var player = document.getElementById("player")
+            player.setAttribute("v",query.v)
+            if(query.audio && query.audio!='false'){
+                player.setAttribute('audio',"true");
+            }
+        }
+    </script>
+</body>
+</html>
