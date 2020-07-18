@@ -11,6 +11,7 @@
 					class="v-poster-img"
 				/>
 				<div class="v-dur" v-if="duration">{{duration}}</div>
+				<div class="v-hd" v-if="hd">{{hd}}</div>
 			</div>
 			<div class="v-title">
 				<div>{{title}}</div>
@@ -56,6 +57,12 @@ export default {
 		},
 		src() {
 			return imgSrc(this.id);
+		},
+		hd(){
+			if(!this.item.contentDetails || !this.item.contentDetails.definition){
+				return
+			}
+			return {'hd':'高清','sd':'标清'}[this.item.contentDetails.definition]
 		},
 		duration() {
 			if (
@@ -144,7 +151,7 @@ export default {
 				background-image: none;
 			}
 		}
-		.v-dur {
+		.v-dur,.v-hd {
 			position: absolute;
 			right: 5px;
 			bottom: 5px;
@@ -154,6 +161,11 @@ export default {
 			padding: 1px 8px;
 			font-size: 12px;
 			color: #fff;
+		}
+		.v-hd{
+			left:5px;
+			right:initial;
+			background: #2196f3;
 		}
 	}
 

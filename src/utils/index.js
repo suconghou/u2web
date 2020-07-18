@@ -45,7 +45,7 @@ export const timeBefore = time => {
 };
 
 export const formatDuration = t => {
-    const arr = t.match(/[1-9]+/g).map(v => v.length == 1 ? '0' + v : v)
+    const arr = t.match(/[1-9]\d{0,3}/g).map(v => v.length == 1 ? '0' + v : v)
     return arr.join(':')
 }
 
