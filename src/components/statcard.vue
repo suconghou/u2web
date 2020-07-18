@@ -3,8 +3,7 @@
 		<div class="stat-card-inner" @mouseleave="curr=null">
 			<div
 				class="box"
-				:rel="rel"
-				:class="status[item.no]?status[item.no].status:''"
+				:class="[status[item.no]?status[item.no].status:'',status[item.no]?status[item.no].progress:'']"
 				@mouseenter="curr=item"
 				v-for="(item,index) in segments"
 				:key="index"
@@ -73,7 +72,7 @@ export default {
 				const s = this.status[item.no];
 				const z = item.n - item.m;
 				total += z;
-				if (this.rel && s && s.status.indexOf("done") > -1) {
+				if (s && s.status.indexOf("done") > -1) {
 					loaded += z;
 				}
 			});
@@ -87,23 +86,31 @@ export default {
 	data() {
 		return {
 			curr: null,
-			status: {},
-			rel: 0
+			status: {}
 		};
 	},
 	methods: {
 		statusupdate(t, res) {
 			if (t.indexOf("start") > -1) {
-				this.status[res.no] = {
+				const s = this.status[res.no];
+				if (s && s.status.indexOf("done") > -1) {
+					return;
+				}
+				Vue.set(this.status, res.no, {
 					status: t
-				};
+				});
+			} else if (t.indexOf("progress") > -1) {
+				const s = this.status[res.no];
+				if (s) {
+					const p = Math.ceil(((res.i + 1) / res.n) * 10);
+					s.progress = `p${p} p${res.i + 1}-${res.n}`;
+				}
 			} else {
-				this.status[res.no] = {
+				Vue.set(this.status, res.no, {
 					status: res.err ? "error" : t,
 					item: res
-				};
+				});
 			}
-			this.rel++;
 		},
 		async toSave() {
 			const name = this.title;
@@ -126,6 +133,115 @@ export default {
 </script>
 
 <style lang="less">
+@keyframes shining1 {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.1);
+	}
+	100% {
+		transform: scale(1);
+		background: #e50bff;
+	}
+}
+@keyframes shining2 {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.2);
+	}
+	100% {
+		transform: scale(1);
+		background: #e50bff;
+	}
+}
+@keyframes shining3 {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.3);
+	}
+	100% {
+		transform: scale(1);
+		background: #e50bff;
+	}
+}
+@keyframes shining4 {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.4);
+	}
+	100% {
+		transform: scale(1);
+		background: #e50bff;
+	}
+}
+@keyframes shining5 {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(90deg);
+		background: #e50bff;
+	}
+}
+@keyframes shining6 {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(180deg);
+		background: #e50bff;
+	}
+}
+@keyframes shining7 {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(270deg);
+		background: #e50bff;
+	}
+}
+@keyframes shining8 {
+	0% {
+		transform: rotate(0);
+	}
+	100% {
+		transform: rotate(360deg);
+		background: #e50bff;
+	}
+}
+@keyframes shining9 {
+	0% {
+		transform: scale(0.1);
+	}
+	50% {
+		transform: scale(2);
+	}
+	100% {
+		transform: scale(1);
+		background: #e50bff;
+	}
+}
+@keyframes shining10 {
+	0% {
+		transform: scale(0.1);
+	}
+	50% {
+		transform: scale(2);
+	}
+	100% {
+		transform: scale(1);
+		background: #e50bff;
+	}
+}
+
 .stat-card {
 	margin: 20px 0;
 	&-inner {
@@ -143,11 +259,55 @@ export default {
 				background: #0dd6e0;
 			}
 		}
+		&.rtc {
+			opacity: 0.3;
+		}
 		&.error {
 			background: #a00;
 		}
+		&.p1 {
+			opacity: 0.35;
+			animation: shining1 0.5s 1;
+		}
+		&.p2 {
+			opacity: 0.4;
+			animation: shining2 0.51s 1;
+		}
+		&.p3 {
+			opacity: 0.45;
+			animation: shining3 0.52s 1;
+		}
+		&.p4 {
+			opacity: 0.55;
+			animation: shining4 0.53s 1;
+		}
+		&.p5 {
+			opacity: 0.6;
+			animation: shining5 0.54s 1;
+		}
+		&.p6 {
+			opacity: 0.7;
+			animation: shining6 0.55s 1;
+		}
+		&.p7 {
+			opacity: 0.75;
+			animation: shining7 0.56s 1;
+		}
+		&.p8 {
+			opacity: 0.85;
+			animation: shining8 0.57s 1;
+		}
+		&.p9 {
+			opacity: 0.9;
+			animation: shining9 0.58s 1;
+		}
+		&.p10 {
+			opacity: 1;
+			animation: shining10 0.59s 1;
+		}
 		&.done {
 			background: #070;
+			opacity: 1;
 			&.rtc {
 				background: #e50bff;
 			}

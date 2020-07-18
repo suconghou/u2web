@@ -136,8 +136,12 @@ export default {
 					t.v && t.v.statusupdate("rtc start", item);
 				});
 				vloader.listen("res.rtc.done", res => {
-					// 某一文件块已完成,可能成功,可能失败
+					// rtc某一文件块已完成
 					t.v && t.v.statusupdate("rtc done", res);
+				});
+				vloader.listen("res.rtc.progress", res => {
+					// res : {i,n,uid,no}
+					t.v && t.v.statusupdate("progress", res);
 				});
 			}
 
@@ -159,8 +163,12 @@ export default {
 					t.a && t.a.statusupdate("rtc start", item);
 				});
 				aloader.listen("res.rtc.done", res => {
-					// 某一文件块已完成,可能成功,可能失败
+					// rtc某一文件块已完成
 					t.a && t.a.statusupdate("rtc done", res);
+				});
+				aloader.listen("res.rtc.progress", res => {
+					// res : {i,n,uid,no}
+					t.a && t.a.statusupdate("progress", res);
 				});
 			}
 		}
@@ -252,7 +260,7 @@ export default {
 }
 @media screen and (max-width: 1024px) {
 	.rtc-peer {
-		.name{
+		.name {
 			margin-right: 0;
 		}
 	}
