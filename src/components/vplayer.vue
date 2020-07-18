@@ -21,7 +21,7 @@
 				<div class="errmsg">
 					<div class="hidebtn" @click.stop="video.error=null">+</div>
 					<p>{{video.error.stack||video.error}}</p>
-					<p>播放出错,请刷新重试</p>
+					<p v-if="typeof video.error!='string'">播放出错,请刷新重试</p>
 				</div>
 			</div>
 			<div class="poster" v-if="!video.duration || audio" :style="poster"></div>
@@ -540,6 +540,11 @@ export default {
 			this.$nextTick(() => {
 				this.v = true;
 				this.$nextTick(() => {
+					const loadItem = webp ? this.webm : this.mp4;
+					if(!loadItem.length){
+						this.video.error='资源不存在或不支持'
+						return
+					}
 					const v = this.$refs.video;
 					v.addEventListener("seeking", () => {
 						this.video.seeking = true;
@@ -585,7 +590,6 @@ export default {
 					});
 
 					loader = new fastloadjs(def);
-					const loadItem = webp ? this.webm : this.mp4;
 					loader.listen("ready", (loaders, dispatchs, initdatas) => {
 						this.$emit(
 							"loadersready",
