@@ -91,24 +91,25 @@ export default {
 	},
 	methods: {
 		statusupdate(t, res) {
+			const s = this.status[res.no];
 			if (t.indexOf("start") > -1) {
-				const s = this.status[res.no];
 				if (s && s.status.indexOf("done") > -1) {
 					return;
 				}
-				Vue.set(this.status, res.no, {
-					status: t
+				this.$set(this.status, res.no, {
+					status: t,
+					progress: s ? s.progress : ""
 				});
 			} else if (t.indexOf("progress") > -1) {
-				const s = this.status[res.no];
 				if (s) {
 					const p = Math.ceil(((res.i + 1) / res.n) * 10);
 					s.progress = `p${p} p${res.i + 1}-${res.n}`;
 				}
 			} else {
-				Vue.set(this.status, res.no, {
+				this.$set(this.status, res.no, {
 					status: res.err ? "error" : t,
-					item: res
+					item: res,
+					progress: s ? s.progress : ""
 				});
 			}
 		},
