@@ -45,6 +45,13 @@ export const timeBefore = time => {
 };
 
 export const formatDuration = t => {
+    if (t == 'P0D') {
+        return '直播'
+    }
+    const m = t.match(/([1-9]+)M$/)
+    if (m) {
+        return (m[1].length == 1 ? '0' + m[1] : m[1]) + ':00'
+    }
     const arr = t.match(/[1-9]\d{0,3}/g).map(v => v.length == 1 ? '0' + v : v)
     return arr.join(':')
 }
