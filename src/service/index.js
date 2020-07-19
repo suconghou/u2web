@@ -8,7 +8,7 @@ if (abs) {
     vBaseURL = vBaseURL.split(';').filter(v => v.substr(0, 4) == 'http').join(';')
 }
 export const videoBaseURL = vBaseURL
-const apiBaseURL = localStorage.getItem("apibaseurl") || '/video/api/v3';
+const apiBaseURL = localStorage.getItem("apibaseurl") || 'https://r.suconghou.cn/video/api/v3' || '/video/api/v3';
 
 export const defaultImg = 'https://assets.suconghou.cn/defaultImg.png'
 

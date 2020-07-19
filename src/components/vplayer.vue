@@ -331,7 +331,10 @@ const format = (item, playerInfo) => {
 	const uri = `/${playerInfo.id}/${item.itag}.${
 		/webm/.test(item.type) ? "webm" : "mp4"
 	}`;
-	const mirrors = videoBaseURL.split(";").filter(v=>v).map(v => v + uri);
+	const mirrors = videoBaseURL
+		.split(";")
+		.filter(v => v)
+		.map(v => v + uri);
 	return {
 		itag: item.itag,
 		quality: item.quality,
@@ -520,14 +523,17 @@ export default {
 		);
 	},
 	beforeDestroy() {
-		if (loader) {
-			loader.destroy();
-		}
-		if (this.$refs.video) {
-			this.$refs.video.pause();
-		}
+		this.destroy();
 	},
 	methods: {
+		destroy() {
+			if (loader) {
+				loader.destroy();
+			}
+			if (this.$refs.video) {
+				this.$refs.video.pause();
+			}
+		},
 		init() {
 			this.$emit("init");
 			if (this.$refs.video) {
@@ -541,9 +547,9 @@ export default {
 				this.v = true;
 				this.$nextTick(() => {
 					const loadItem = webp ? this.webm : this.mp4;
-					if(!loadItem.length){
-						this.video.error='资源不存在或不支持'
-						return
+					if (!loadItem.length) {
+						this.video.error = "资源不存在或不支持";
+						return;
 					}
 					const v = this.$refs.video;
 					v.addEventListener("seeking", () => {

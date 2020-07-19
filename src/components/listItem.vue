@@ -86,7 +86,7 @@ export default {
 			}
 		},
 		pubdate() {
-			if (this.video && this.item.contentDetails) {
+			if (this.video && this.item.contentDetails && this.item.contentDetails.videoPublishedAt) {
 				return timeBefore(this.item.contentDetails.videoPublishedAt);
 			}
 			return timeBefore(this.v.publishedAt);
@@ -139,6 +139,7 @@ export default {
 		position: absolute;
 		top: 0;
 		left: 0;
+		max-height: 100%;
 		&.loaded {
 			opacity: 1;
 		}

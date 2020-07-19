@@ -136,6 +136,7 @@ export default {
 			position: absolute;
 			top: 0;
 			left: 0;
+			max-height: 100%;
 			&.loaded {
 				opacity: 1;
 			}
