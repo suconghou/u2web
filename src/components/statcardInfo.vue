@@ -28,7 +28,7 @@
 				<span class="m-s" v-show="mid">{{statOnNum}}/{{Object.keys(stat).length}}</span>
 			</div>
 
-			<div class="rtc-peer" :class="item.state" v-for="(item,key) in stat" :key="key">
+			<div class="rtc-peer" :class="item.state" :cstate="item.cstate" :istate="item.istate" :gstate="item.gstate" v-for="(item,key) in stat" :key="key">
 				<span class="name">节点 {{key}}</span>
 				<span class="traff">已发送 {{item.tx | byteFormat}}</span>
 				<span class="traff">已接收 {{item.rx | byteFormat}}</span>

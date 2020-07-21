@@ -31,7 +31,7 @@
 					</div>
 					<div class="right">
 						<div class="mid">{{id}}</div>
-						<div class="peer-item" :class="item.state" v-for="(item,uid) in stat" :key="uid">
+						<div class="peer-item" :class="item.state" :cstate="item.cstate" :istate="item.istate" :gstate="item.gstate"  v-for="(item,uid) in stat" :key="uid">
 							<p class="p-id">{{uid}}</p>
 							<p class="p-meta">
 								<span class="tx">发送 {{item.tx | byteFormat}}</span>
