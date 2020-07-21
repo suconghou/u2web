@@ -265,6 +265,9 @@ export default {
 		&.closed {
 			background: #f7c6cc;
 		}
+		&[cstate=failed],&[istate=failed]{
+			background: #ff4a64;
+		}
 	}
 }
 @media screen and (max-width: 1024px) {
