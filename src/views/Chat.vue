@@ -272,10 +272,16 @@ export default {
 			margin-right: 20px;
 		}
 		&.open {
-			background: #9f9;
+			background: #8f8;
 		}
-		&.close {
-			background: #f49;
+		&.connecting {
+			background: #fff4a9;
+		}
+		&.closing {
+			background: #fbe1e4;
+		}
+		&.closed {
+			background: #f7c6cc;
 		}
 		&:hover {
 			background: #ddd;
@@ -285,15 +291,15 @@ export default {
 @media screen and (max-width: 1024px) {
 	.concat-wrap {
 		padding: 0;
-		    margin: 10px 0 0;
+		margin: 10px 0 0;
 		.left {
 			width: 100%;
 		}
 		.right {
 			width: 100%;
 		}
-		.chat-user{
-			cite{
+		.chat-user {
+			cite {
 				width: 100px;
 			}
 		}

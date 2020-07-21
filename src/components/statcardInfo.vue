@@ -256,6 +256,15 @@ export default {
 		&.open {
 			background: #8f8;
 		}
+		&.connecting {
+			background: #fff4a9;
+		}
+		&.closing {
+			background: #fbe1e4;
+		}
+		&.closed {
+			background: #f7c6cc;
+		}
 	}
 }
 @media screen and (max-width: 1024px) {
