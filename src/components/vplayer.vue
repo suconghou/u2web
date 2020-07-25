@@ -238,14 +238,21 @@
 160 144p  mp4 视频
 597 144p  mp4 视频(小)
 
-394 144p  mp4 视频(av01.0.00M.08)
-395 240p  mp4 视频(av01.0.00M.08)
-396 360p  mp4 视频(av01.0.00M.08)
-397 480p  mp4 视频(av01.0.00M.08)
-398 720p  mp4 视频(av01.0.00M.08)
-399 1080p mp4 视频(av01.0.00M.08)
-400 1440p mp4 视频(av01.0.00M.08)
-401 2160p mp4 视频(av01.0.00M.08)
+298 720p60   mp4 视频(avc1.4d4020)
+299 1080p60  mp4 视频(avc1.64002a)
+
+
+
+394 144p    mp4 视频(av01.0.00M.08)
+395 240p    mp4 视频(av01.0.00M.08)
+396 360p    mp4 视频(av01.0.00M.08)
+397 480p    mp4 视频(av01.0.00M.08)
+398 720p60  mp4 视频(av01.0.00M.08)
+399 1080p60 mp4 视频(av01.0.00M.08)
+400 1440p60 mp4 视频(av01.0.00M.08)
+401 2160p60 mp4 视频(av01.0.00M.08)
+402 4320p60 mp4 视频(av01.0.17M.08)
+571 4320p60 mp4 视频(av01.0.17M.08)
 
 140 tiny  mp4 音频
 599 tiny  mp4 音频(小)
@@ -261,6 +268,11 @@
 248 1080p webm 视频
 271 1440p webm 视频
 313 2160p webm 视频
+
+302 720p60  webm 视频
+303 1080p60 webm 视频
+308 1440p60 webm 视频
+315 2160p60 webm 视频
 
 278 144p  webm 视频
 598 144p  webm 视频(小)
@@ -280,12 +292,15 @@ const types = {
 			"240p": [133, 395],
 			"360p": [134, 396],
 			"480p": [135, 397],
-			"720p": [136, 398],
-			"1080p": [137, 399],
-			"1440p": [400],
-			"2160p": [401]
+			"720p": [136],
+			"720p60": [398],
+			"1080p": [137],
+			"1080p60": [399],
+			"1440p60": [400],
+			"2160p60": [401],
+			"4320p60":[402,571]
 		},
-		audio: [140, 599]
+		audio: [140, 599],
 	},
 	webm: {
 		video: {
@@ -294,22 +309,41 @@ const types = {
 			"360p": [243, 134, 396],
 			"480p": [244, 135, 397],
 			"720p": [247, 136, 398],
-			"1080p": [248, 137, 399],
-			"1440p": [271, 400],
-			"2160p": [313, 401]
+			"720p60": [302, 398],
+			"1080p": [248, 137],
+			"1080p60": [303, 399],
+			"1440p": [271],
+			"1440p60": [308, 400],
+			"2160p": [313],
+			"2160p60": [315, 401],
+			"4320p60":[402,571]
 		},
-		audio: [249, 250, 251, 600, 140, 599]
-	}
+		audio: [249, 250, 251, 600, 140, 599],
+	},
 };
 
-const keys = ["144p", "240p", "360p", "480p", "720p", "1080p", "2160p"];
+const keys = [
+	"144p",
+	"240p",
+	"360p",
+	"480p",
+	"720p",
+	"720p60",
+	"1080p",
+	"1080p60",
+	"1440p",
+	"1440p60",
+	"2160p",
+	"2160p60",
+	"4320p60" 
+];
 
 const def = {
 	req: "",
 	thread: 2,
 	thunk: 1048576,
 	start: 0,
-	end: 1048576
+	end: 1048576,
 };
 
 import { timeDuration, addEventListenerOnce, webp } from "@/utils";
@@ -318,7 +352,7 @@ import { imgSrc, videoBaseURL } from "@/service";
 
 let loader, timer, delay;
 
-const canplay = t => {
+const canplay = (t) => {
 	if (t && t.len) {
 		return (
 			Object.keys(t.initRange).length + Object.keys(t.indexRange).length
@@ -333,25 +367,25 @@ const format = (item, playerInfo) => {
 	}`;
 	const mirrors = videoBaseURL
 		.split(";")
-		.filter(v => v)
-		.map(v => v + uri);
+		.filter((v) => v)
+		.map((v) => v + uri);
 	return {
 		itag: item.itag,
 		quality: item.quality,
 		req: mirrors[0],
 		init: {
 			start: Number(item.initRange.start),
-			end: Number(item.initRange.end)
+			end: Number(item.initRange.end),
 		},
 		index: {
 			start: Number(item.indexRange.start),
-			end: Number(item.indexRange.end)
+			end: Number(item.indexRange.end),
 		},
 		mimeCodec: item.type,
 		len: Number(item.len),
 		duration: Number(playerInfo.duration),
 		meta: `${playerInfo.id}:${item.itag}`,
-		mirrors
+		mirrors,
 	};
 };
 
@@ -378,16 +412,16 @@ export default {
 	props: {
 		playerInfo: {
 			type: Object,
-			required: true
+			required: true,
 		},
 		autoplay: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		audio: {
 			type: Boolean,
-			default: false
-		}
+			default: false,
+		},
 	},
 	data() {
 		return {
@@ -398,7 +432,7 @@ export default {
 			tiptime: {
 				v: "",
 				show: false,
-				left: ""
+				left: "",
 			},
 			v: false,
 			video: {
@@ -408,34 +442,34 @@ export default {
 				seeking: false,
 				error: "",
 				playbackRate: sessionStorage.getItem("playbackRate") || 1,
-				cycle: sessionStorage.getItem("cycle") || 0
+				cycle: sessionStorage.getItem("cycle") || 0,
 			},
 			speeds: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
 			vol: {
-				v: 60
+				v: 60,
 			},
 			bottomHide: false,
 			full: false,
 			currq: {
 				quality: "",
-				itag: 0
-			}
+				itag: 0,
+			},
 		};
 	},
 	computed: {
 		playedStyle() {
 			return {
-				width: `${this.video.played * 100}%`
+				width: `${this.video.played * 100}%`,
 			};
 		},
 		dotStyle() {
 			return {
-				left: `calc(${this.video.played * 100}% - 5px)`
+				left: `calc(${this.video.played * 100}% - 5px)`,
 			};
 		},
 		tipStyle() {
 			return {
-				left: this.tiptime.left
+				left: this.tiptime.left,
 			};
 		},
 		posterImg() {
@@ -443,7 +477,7 @@ export default {
 		},
 		poster() {
 			return {
-				backgroundImage: `url("${this.posterImg}")`
+				backgroundImage: `url("${this.posterImg}")`,
 			};
 		},
 		mp4() {
@@ -494,18 +528,21 @@ export default {
 			const videos = webp ? types.webm.video : types.mp4.video;
 			for (let q of keys) {
 				const itags = videos[q];
+				if(!itags){
+					continue;
+				}
 				for (let i of itags) {
 					if (canplay(s[i])) {
 						r.push({
 							quality: q,
-							itag: i
+							itag: i,
 						});
 						break;
 					}
 				}
 			}
 			return r.reverse();
-		}
+		},
 	},
 	created() {},
 	mounted() {
@@ -580,7 +617,7 @@ export default {
 					v.addEventListener("ended", () => {
 						if (this.video.cycle == 1) {
 							setTimeout(() => {
-								v.play().catch(err => console.info(err));
+								v.play().catch((err) => console.info(err));
 							}, 1000);
 						} else {
 							if (this.audio) {
@@ -591,7 +628,7 @@ export default {
 					v.addEventListener("loadedmetadata", () => {
 						this.playSpeed();
 						if (this.autoplay) {
-							v.play().catch(err => console.info(err));
+							v.play().catch((err) => console.info(err));
 						}
 					});
 
@@ -604,7 +641,7 @@ export default {
 							initdatas
 						);
 						// 移动端没有progress事件,只能用这个更新
-						loaders.forEach(loader => {
+						loaders.forEach((loader) => {
 							let i = 0;
 							loader.listen("res.done", () => {
 								i++;
@@ -614,7 +651,7 @@ export default {
 							});
 						});
 					});
-					loader.listen("error", err => {
+					loader.listen("error", (err) => {
 						this.video.error = err;
 						loader && loader.pause();
 					});
@@ -623,7 +660,7 @@ export default {
 						const loadItemVideo = loadItem[0];
 						this.switchQuality({
 							itag: loadItemVideo.itag,
-							quality: loadItemVideo.quality
+							quality: loadItemVideo.quality,
 						});
 					}
 
@@ -640,10 +677,10 @@ export default {
 				seeking: false,
 				error: "",
 				playbackRate: sessionStorage.getItem("playbackRate") || 1,
-				cycle: sessionStorage.getItem("cycle") || 0
+				cycle: sessionStorage.getItem("cycle") || 0,
 			};
 			this.vol = {
-				v: 60
+				v: 60,
 			};
 		},
 		getTime(dst) {
@@ -732,7 +769,7 @@ export default {
 			this.$refs.video.pause();
 		},
 		playVideo() {
-			this.$refs.video.play().catch(err => console.info(err));
+			this.$refs.video.play().catch((err) => console.info(err));
 		},
 		muteoff() {
 			this.$refs.video.muted = false;
@@ -768,7 +805,7 @@ export default {
 		},
 		dotDown(e) {
 			let y, vol;
-			const onVolMoveProgress = e => {
+			const onVolMoveProgress = (e) => {
 				const w = 60;
 				const dx = y - e.pageY;
 				let ox = vol + dx;
@@ -849,20 +886,20 @@ export default {
 				var width = endX - startX;
 				ctx.fillRect(startX, 0, width, c.height);
 			}
-		}
+		},
 	},
 	watch: {
 		"playerInfo.id"(v) {
 			if (v) {
 				this.init();
 			}
-		}
+		},
 	},
 	filters: {
 		timeformat(t) {
 			return timeDuration(t);
-		}
-	}
+		},
+	},
 };
 </script>
 
