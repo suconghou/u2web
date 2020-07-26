@@ -46,9 +46,8 @@
 </template>
 
 <script>
-var timer;
+var timer,rtc;
 import { byteFormat } from "@/utils/index";
-const rtc = fastloadjs.rtc();
 export default {
 	data() {
 		return {
@@ -64,6 +63,7 @@ export default {
 		}
 	},
 	mounted() {
+		rtc = fastloadjs.rtc();
 		this.init();
 	},
 	methods: {
