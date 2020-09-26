@@ -16,26 +16,18 @@ import { mostPopularVideos } from "@/service";
 export default {
 	components: {
 		videoList,
-		loading
+		loading,
 	},
 	data() {
 		return {
 			items: [],
-			loading: true
+			loading: true,
 		};
 	},
 	computed: {
 		listitems() {
-			const res = [];
-			const have = [];
-			this.items.forEach(item => {
-				if (!have.includes(item.etag)) {
-					res.push(item);
-					have.push(item.etag);
-				}
-			});
-			return res;
-		}
+			return this.items;
+		},
 	},
 	// 1,10,15,20,23
 	async created() {
@@ -53,9 +45,16 @@ export default {
 			if (!ok) {
 				return;
 			}
-			this.items = [...this.items, ...data.items];
-		}
-	}
+			const ids = [];
+			this.items = [...this.items, ...data.items].filter((item) => {
+				if (ids.includes(item.id)) {
+					return false;
+				}
+				ids.push(item.id);
+				return true;
+			});
+		},
+	},
 };
 </script>
 

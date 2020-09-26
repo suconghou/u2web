@@ -918,7 +918,7 @@ export default {
 .vplayer {
 	width: 100%;
 	min-height: 400px;
-	// height: 100%; // 组件模式需使用100%
+	// height: 100%; // 组件模式需使用100%,使用此行,注释掉上面一行
 	position: relative;
 	overflow: hidden;
 	user-select: none;
@@ -1082,6 +1082,8 @@ export default {
 				padding: 30px;
 				box-shadow: 0 0 10px #444;
 				position: relative;
+				max-width: 100%;
+				max-height: 100%;
 				.hidebtn {
 					z-index: 78;
 					position: absolute;

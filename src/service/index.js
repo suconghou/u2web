@@ -1,8 +1,11 @@
+import Vue from 'vue'
+import Toast from 'muse-ui-toast';
+Vue.use(Toast);
 import axios from 'axios'
 import { webp } from '@/utils'
 
 // 编译为组件时 videoBaseURL 必须为https绝对地址
-const abs = '' // "https://video.feds.club/video"
+const abs = 'https://stream.pull.workers.dev/video' // "https://video.feds.club/video"
 let vBaseURL = localStorage.getItem("baseurl") || abs || '/video';
 if (abs) {
     vBaseURL = vBaseURL.split(';').filter(v => v.substr(0, 4) == 'http').join(';')
@@ -14,6 +17,7 @@ export const defaultImg = 'https://assets.suconghou.cn/defaultImg.png'
 
 const errors = (e) => {
     console.error(e)
+    Toast.error(e);
 }
 
 const filter = (res) => {
@@ -23,7 +27,6 @@ const filter = (res) => {
         return res;
     }
     res.ok = false;
-    console.info(res);
     if (data.error && data.error.errors && data.error.errors[0] && data.error.errors[0].message) {
         errors(data.error.errors[0].message)
     } else {
@@ -36,6 +39,9 @@ export const httpCreate = (baseURL, timeout = 60e3) => {
     const instance = axios.create({
         baseURL,
         timeout,
+        validateStatus: function (status) {
+            return true
+        },
     });
     instance.interceptors.response.use(filter);
     return instance;
