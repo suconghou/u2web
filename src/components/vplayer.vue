@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="vplayer"
-		:class="{full:full,audio:audio}"
+		:class="{ full: full, audio: audio }"
 		tabindex="1"
 		@keydown.space.stop.prevent="togglePlay"
 		@keydown.left.stop.prevent="seek(-5)"
@@ -9,7 +9,7 @@
 	>
 		<div
 			class="controls"
-			:class="{cleanmode:bottomHide}"
+			:class="{ cleanmode: bottomHide }"
 			@mouseenter="maskMouseEnter"
 			@mouseleave="maskMouseLeave"
 			@mousemove="maskMouseMove"
@@ -19,14 +19,26 @@
 			<div class="seeking" v-if="video.seeking"></div>
 			<div class="errored" v-if="video.error">
 				<div class="errmsg">
-					<div class="hidebtn" @click.stop="video.error=null">+</div>
-					<p>{{video.error.stack||video.error}}</p>
-					<p v-if="typeof video.error!='string'">播放出错,请刷新重试</p>
+					<div class="hidebtn" @click.stop="video.error = null">
+						+
+					</div>
+					<p>{{ video.error.stack || video.error }}</p>
+					<p v-if="typeof video.error != 'string'">
+						播放出错,请刷新重试
+					</p>
 				</div>
 			</div>
-			<div class="poster" v-if="!video.duration || audio" :style="poster"></div>
-			<div class="bottom" :class="{hide:bottomHide}" @click.stop.prevent>
-				<div v-if="audio" class="a-title">{{playerInfo.title}}</div>
+			<div
+				class="poster"
+				v-if="!video.duration || audio"
+				:style="poster"
+			></div>
+			<div
+				class="bottom"
+				:class="{ hide: bottomHide }"
+				@click.stop.prevent
+			>
+				<div v-if="audio" class="a-title">{{ playerInfo.title }}</div>
 				<div class="progress-bar">
 					<div
 						ref="progressLine"
@@ -36,7 +48,13 @@
 						@mouseenter="tiptime.show = true"
 						@mouseleave="tiptime.show = false"
 					>
-						<div ref="times" class="times" :style="tipStyle" v-show="tiptime.show" v-text="tiptime.v"></div>
+						<div
+							ref="times"
+							class="times"
+							:style="tipStyle"
+							v-show="tiptime.show"
+							v-text="tiptime.v"
+						></div>
 						<canvas ref="loadbar" class="loaded"></canvas>
 						<div class="played" :style="playedStyle"></div>
 						<div class="dot" :style="dotStyle"></div>
@@ -60,24 +78,60 @@
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 20 20"
 						>
-							<rect x="3" y="1" width="3" height="18" rx="1" ry="1" />
-							<rect x="14" y="1" width="3" height="18" rx="1" ry="1" />
+							<rect
+								x="3"
+								y="1"
+								width="3"
+								height="18"
+								rx="1"
+								ry="1"
+							/>
+							<rect
+								x="14"
+								y="1"
+								width="3"
+								height="18"
+								rx="1"
+								ry="1"
+							/>
 						</svg>
 					</div>
 					<div class="time-duration">
-						<span class="curr">{{video.currentTime | timeformat}}</span>
+						<span class="curr">{{
+							video.currentTime | timeformat
+						}}</span>
 						<span class="padding">/</span>
-						<span class="total">{{video.duration | timeformat}}</span>
+						<span class="total">{{
+							video.duration | timeformat
+						}}</span>
 					</div>
 
 					<div class="full-screen" v-if="!audio">
-						<svg v-if="small" @click="toFull" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-							<path d="M3,9A1,1,0,0,1,2,8V4A2,2,0,0,1,4,2H8A1,1,0,0,1,8,4H4V8A1,1,0,0,1,3,9Z" />
-							<path d="M17,9a1,1,0,0,1-1-1V4H12a1,1,0,0,1,0-2h4a2,2,0,0,1,2,2V8A1,1,0,0,1,17,9Z" />
-							<path d="M8,18H4a2,2,0,0,1-2-2V12a1,1,0,0,1,2,0v4H8a1,1,0,0,1,0,2Z" />
-							<path d="M16,18H12a1,1,0,0,1,0-2h4V12a1,1,0,0,1,2,0v4A2,2,0,0,1,16,18Z" />
+						<svg
+							v-if="small"
+							@click="toFull"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 20 20"
+						>
+							<path
+								d="M3,9A1,1,0,0,1,2,8V4A2,2,0,0,1,4,2H8A1,1,0,0,1,8,4H4V8A1,1,0,0,1,3,9Z"
+							/>
+							<path
+								d="M17,9a1,1,0,0,1-1-1V4H12a1,1,0,0,1,0-2h4a2,2,0,0,1,2,2V8A1,1,0,0,1,17,9Z"
+							/>
+							<path
+								d="M8,18H4a2,2,0,0,1-2-2V12a1,1,0,0,1,2,0v4H8a1,1,0,0,1,0,2Z"
+							/>
+							<path
+								d="M16,18H12a1,1,0,0,1,0-2h4V12a1,1,0,0,1,2,0v4A2,2,0,0,1,16,18Z"
+							/>
 						</svg>
-						<svg v-else @click="exitFull" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+						<svg
+							v-else
+							@click="exitFull"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 20 20"
+						>
 							<path
 								d="M7.75,1A1.13,1.13,0,0,1,8.88,2.12v4.5A2.26,2.26,0,0,1,6.62,8.88H2.12a1.13,1.13,0,0,1,0-2.26h4.5V2.12A1.13,1.13,0,0,1,7.75,1Z"
 							/>
@@ -93,7 +147,11 @@
 						</svg>
 					</div>
 					<div class="fake-full" v-if="!audio">
-						<svg @click="full=!full" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+						<svg
+							@click="full = !full"
+							viewBox="0 0 1024 1024"
+							xmlns="http://www.w3.org/2000/svg"
+						>
 							<path
 								d="M957.44 962.56H61.44c-25.6 0-40.96-20.48-40.96-40.96V128c0-25.6 20.48-40.96 40.96-40.96h896c25.6 0 40.96 20.48 40.96 40.96v788.48c0 25.6-15.36 46.08-40.96 46.08zM107.52 875.52h808.96V174.08H107.52v701.44z"
 								p-id="3558"
@@ -117,11 +175,18 @@
 					</div>
 					<div class="volume-wrap">
 						<div class="volbtn">
-							<svg v-if="muted" @click="muteoff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+							<svg
+								v-if="muted"
+								@click="muteoff"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+							>
 								<path
 									d="M15.9,4.19,14.79,5.85A5,5,0,0,1,16,13a5.21,5.21,0,0,0,1.45,1.4A7,7,0,0,0,15.9,4.19Z"
 								/>
-								<path d="M8.53,5.2,11,3.14V7.67l2,2V3.14A2,2,0,0,0,9.72,1.6L7.1,3.78Z" />
+								<path
+									d="M8.53,5.2,11,3.14V7.67l2,2V3.14A2,2,0,0,0,9.72,1.6L7.1,3.78Z"
+								/>
 								<path
 									d="M11,13.33v3.53h0L6.43,13H3V7H4.67l-2-2H2A1,1,0,0,0,1,6v8a1,1,0,0,0,1,1H5.7l4,3.38a2,2,0,0,0,2.29.2,2.1,2.1,0,0,0,1-1.85v-1.4Z"
 								/>
@@ -135,32 +200,50 @@
 									transform="translate(-3.78 9.83) rotate(-45)"
 								/>
 							</svg>
-							<svg v-else @click="muteon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+							<svg
+								v-else
+								@click="muteon"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+							>
 								<path
 									d="M11,18.85a2,2,0,0,1-1.28-.47L5.7,15H2a1,1,0,0,1-1-1V6A1,1,0,0,1,2,5H5.64l4-3.34a2.09,2.09,0,0,1,1.94-.44A2,2,0,0,1,13,3.14V16.76a2.09,2.09,0,0,1-1,1.83A2,2,0,0,1,11,18.85ZM3,13H6.43L11,16.86V3.14L6.36,7H3Z"
 								/>
-								<path d="M15.87,15.83l-1.1-1.66a5,5,0,0,0,0-8.32L15.9,4.19a7,7,0,0,1,0,11.64Z" />
+								<path
+									d="M15.87,15.83l-1.1-1.66a5,5,0,0,0,0-8.32L15.9,4.19a7,7,0,0,1,0,11.64Z"
+								/>
 							</svg>
 						</div>
 						<div class="vol-bar-wrap">
 							<div class="vol-bar">
-								<div class="vol-total" @click.stop.prevent="volPosTotal"></div>
+								<div
+									class="vol-total"
+									@click.stop.prevent="volPosTotal"
+								></div>
 								<div
 									class="vol-num"
 									ref="numdiv"
-									:style="{height: (muted?0: vol.v)+'px'}"
+									:style="{
+										height: (muted ? 0 : vol.v) + 'px',
+									}"
 									@click.stop.prevent="volPosNum"
 								></div>
 								<div
 									class="vol-dot"
 									@mousedown.stop.prevent="dotDown"
-									:style="{bottom:((muted?0: vol.v)+4.5)+'px'}"
+									:style="{
+										bottom:
+											(muted ? 0 : vol.v) + 4.5 + 'px',
+									}"
 								></div>
 							</div>
 						</div>
 					</div>
 					<div class="settings" v-if="!audio">
-						<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+						<svg
+							viewBox="0 0 1024 1024"
+							xmlns="http://www.w3.org/2000/svg"
+						>
 							<path
 								d="M512.458441 673.454182c-88.570221 0-160.628374-72.057129-160.628374-160.628374 0-88.570221 72.058153-160.627351 160.628374-160.627351 88.571245 0 160.628374 72.057129 160.628374 160.627351C673.086815 601.397053 601.029686 673.454182 512.458441 673.454182zM512.458441 438.157201c-41.173748 0-74.670653 33.496905-74.670653 74.66963s33.496905 74.670653 74.670653 74.670653c41.172725 0 74.670653-33.496905 74.670653-74.670653S553.631166 438.157201 512.458441 438.157201z"
 							/>
@@ -174,18 +257,37 @@
 									<div class="s-value">播放速度</div>
 									<ul class="s-opt" :rel="video.playbackRate">
 										<li
-											v-for="(item,index) in speeds"
-											:class="{active:item==video.playbackRate}"
+											v-for="(item, index) in speeds"
+											:class="{
+												active:
+													item == video.playbackRate,
+											}"
 											:key="index"
 											@click="playSpeed(item)"
-										>{{item}}倍</li>
+										>
+											{{ item }}倍
+										</li>
 									</ul>
 								</li>
 								<li class="settings-item">
 									<div class="s-value">循环播放</div>
 									<ul class="s-opt">
-										<li :class="{active:video.cycle==1}" @click="cyclePlay(1)">开</li>
-										<li :class="{active:video.cycle==0}" @click="cyclePlay(0)">关</li>
+										<li
+											:class="{
+												active: video.cycle == 1,
+											}"
+											@click="cyclePlay(1)"
+										>
+											开
+										</li>
+										<li
+											:class="{
+												active: video.cycle == 0,
+											}"
+											@click="cyclePlay(0)"
+										>
+											关
+										</li>
 									</ul>
 								</li>
 							</ul>
@@ -197,9 +299,9 @@
 							<li
 								v-for="item in qlist"
 								class="qitem"
-								:class="{active:currq.itag==item.itag}"
+								:class="{ active: currq.itag == item.itag }"
 								:key="item.itag"
-								@click="switchQuality(item,true)"
+								@click="switchQuality(item, true)"
 								v-text="item.quality"
 							></li>
 						</ul>
@@ -212,6 +314,7 @@
 			v-if="v"
 			class="video"
 			:poster="posterImg"
+			:autoplay="autoplay"
 			webkit-playsinline="true"
 			playsinline="true"
 			preload="meta"
@@ -298,7 +401,7 @@ const types = {
 			"1080p60": [399],
 			"1440p60": [400],
 			"2160p60": [401],
-			"4320p60":[402,571]
+			"4320p60": [402, 571],
 		},
 		audio: [140, 599],
 	},
@@ -316,27 +419,25 @@ const types = {
 			"1440p60": [308, 400],
 			"2160p": [313],
 			"2160p60": [315, 401],
-			"4320p60":[402,571]
+			"4320p60": [402, 571],
 		},
 		audio: [249, 250, 251, 600, 140, 599],
 	},
 };
 
-const keys = [
-	"144p",
-	"240p",
-	"360p",
-	"480p",
-	"720p",
-	"720p60",
-	"1080p",
-	"1080p60",
-	"1440p",
-	"1440p60",
-	"2160p",
-	"2160p60",
-	"4320p60" 
-];
+// P2P优化模式只保留360P,720P
+const prefer_keys = sessionStorage.normal
+	? [
+			["240", "144p"],
+			["360p"],
+			["480p"],
+			["720p", "720p60"],
+			["1080p", "1080p60"],
+	  ]
+	: [
+			["360p", "480p", "240p", "144p"],
+			["720p", "1080p", "720p60", "1080p60"],
+	  ];
 
 const def = {
 	req: "",
@@ -389,14 +490,10 @@ const format = (item, playerInfo) => {
 	};
 };
 
-const getvideo = (s, maparr) => {
-	for (let k of keys) {
-		const itags = maparr[k];
-		for (let i of itags) {
-			if (canplay(s[i])) {
-				return s[i];
-			}
-		}
+const getvideo = (s, qlist) => {
+	for (let q of qlist.reverse()) {
+		const itag = q.itag;
+		return s[itag];
 	}
 };
 
@@ -422,10 +519,13 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		firstItag: {
+			type:[Number,String],
+			default:localStorage.getItem("itag")
+		},
 	},
 	data() {
 		return {
-			firstItag: localStorage.getItem("itag"),
 			muted: false,
 			paused: true,
 			small: true,
@@ -488,13 +588,12 @@ export default {
 				if (canplay(s[firstItag])) {
 					r.push(format(s[firstItag], this.playerInfo));
 				} else {
-					const v = getvideo(s, types.mp4.video);
+					const v = getvideo(s, this.qlist);
 					if (v) {
 						r.push(format(v, this.playerInfo));
 					}
 				}
 			}
-
 			const a = getaudio(s, types.mp4.audio);
 			if (a) {
 				r.push(format(a, this.playerInfo));
@@ -509,13 +608,12 @@ export default {
 				if (canplay(s[firstItag])) {
 					r.push(format(s[firstItag], this.playerInfo));
 				} else {
-					const v = getvideo(s, types.webm.video);
+					const v = getvideo(s, this.qlist);
 					if (v) {
 						r.push(format(v, this.playerInfo));
 					}
 				}
 			}
-
 			const a = getaudio(s, types.webm.audio);
 			if (a) {
 				r.push(format(a, this.playerInfo));
@@ -526,17 +624,24 @@ export default {
 			const r = [];
 			const s = this.playerInfo.streams;
 			const videos = webp ? types.webm.video : types.mp4.video;
-			for (let q of keys) {
-				const itags = videos[q];
-				if(!itags){
-					continue;
-				}
-				for (let i of itags) {
-					if (canplay(s[i])) {
-						r.push({
-							quality: q,
-							itag: i,
-						});
+			for (let groupkeys of prefer_keys) {
+				for (let q of groupkeys) {
+					const itags = videos[q];
+					if (!itags) {
+						continue;
+					}
+					let found = false;
+					for (let i of itags) {
+						if (canplay(s[i])) {
+							r.push({
+								quality: q,
+								itag: i,
+							});
+							found = true;
+							break;
+						}
+					}
+					if (found) {
 						break;
 					}
 				}
@@ -627,6 +732,11 @@ export default {
 					});
 					v.addEventListener("loadedmetadata", () => {
 						this.playSpeed();
+						if (this.autoplay) {
+							v.play().catch((err) => console.info(err));
+						}
+					});
+					v.addEventListener("canplay", () => {
 						if (this.autoplay) {
 							v.play().catch((err) => console.info(err));
 						}
@@ -1229,7 +1339,8 @@ export default {
 			text-align: right;
 			width: 30px;
 			height: 20px;
-			padding: 8px 0;
+			padding: 0 0 8px;
+			top: 8px;
 			color: #ddd;
 			line-height: 20px;
 			position: relative;
@@ -1371,6 +1482,7 @@ export default {
 			color: #ddd;
 			line-height: 20px;
 			position: relative;
+			top: 10px;
 			&:hover {
 				.qitem-list {
 					display: block;
@@ -1378,29 +1490,35 @@ export default {
 			}
 			.qitem-list {
 				position: absolute;
-				bottom: 30px;
-				padding: 0 0 10px 0;
+				bottom: 18px;
+				padding: 0 0 18px 0;
 				margin: 0;
 				display: none;
 				white-space: nowrap;
 			}
 			.curr-q {
 				text-transform: uppercase;
-				height: 20px;
-				padding: 8px 0 8px 14px;
+				height: 12px;
+				padding: 0 0 10px 14px;
 				font-size: 14px;
-				line-height: 20px;
+				line-height: 18px;
 				box-sizing: content-box;
 			}
 			.qitem {
-				background: rgba(1, 1, 1, 0.6);
+				background: #444;
 				display: block;
 				text-transform: uppercase;
 				padding: 2px 10px;
 				cursor: pointer;
-				&:hover,
+				&:hover {
+					background: #111;
+				}
 				&.active {
-					background: rgba(1, 1, 1, 0.8);
+					background: #45a9ff;
+					color: #fff;
+					&:hover {
+						background: #4599ff;
+					}
 				}
 			}
 		}
@@ -1412,7 +1530,7 @@ export default {
 			color: #ddd;
 			line-height: 20px;
 			box-sizing: content-box;
-			padding-top: 7px;
+			top: 7px;
 			position: relative;
 			svg {
 				width: 22px;
@@ -1442,14 +1560,14 @@ export default {
 			&-list {
 				padding: 0;
 				margin: 4px 0;
-				background: rgba(1, 1, 1, 0.6);
+				background: #444;
 			}
 			&-item {
 				list-style: none;
 				position: relative;
 				&:hover {
 					cursor: pointer;
-					background: rgba(1, 1, 1, 0.8);
+					background: #111;
 					.s-opt {
 						display: block;
 					}
@@ -1462,7 +1580,7 @@ export default {
 					display: block;
 				}
 				li:hover {
-					background: rgba(1, 1, 1, 0.8);
+					background: #111;
 				}
 				.s-value {
 					padding: 4px 0;
@@ -1470,7 +1588,7 @@ export default {
 				.s-opt {
 					display: none;
 					width: 60px;
-					background: rgba(1, 1, 1, 0.6);
+					background: #444;
 					left: 76px;
 					cursor: pointer;
 					bottom: 0;
