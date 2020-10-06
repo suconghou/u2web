@@ -3,10 +3,15 @@
 		<loading v-if="loading"></loading>
 		<mu-row v-else>
 			<mu-col lg="8" xl="8" md="7" sm="12" span="12">
-				<div class="v-error vplayer-wrapper" v-if="error">{{error}}</div>
+				<div class="v-error vplayer-wrapper" v-if="error">
+					{{ error }}
+				</div>
 				<template v-else>
-					<div class="m-title">{{v.title}}</div>
-					<div class="vplayer-wrapper" :class="{loading:!playerInfo.id}">
+					<div class="m-title">{{ v.title }}</div>
+					<div
+						class="vplayer-wrapper"
+						:class="{ loading: !playerInfo.id }"
+					>
 						<vplayer
 							ref="player"
 							@init="initPlayer"
@@ -17,26 +22,63 @@
 							:v="playerInfo.id"
 						/>
 					</div>
-					<div class="channel" @click="toChannel">{{v.channelTitle}}</div>
-					<div class="m-meta">
-						<span class="pubdate" v-show="v.publishedAt">发布于{{date}}</span>
-						<mu-badge class="duration" :content="duration" color="secondary"></mu-badge>
-						<mu-badge class="viewcount" :content="viewcount" color="primary"></mu-badge>
-						<mu-badge class="iframe" content="嵌入视频" @click="toShare" color="error"></mu-badge>
+					<div class="channel" @click="toChannel">
+						{{ v.channelTitle }}
 					</div>
-					<div class="m-desc">{{v.description}}</div>
+					<div class="m-meta">
+						<span class="pubdate" v-show="v.publishedAt"
+							>发布于{{ date }}</span
+						>
+						<mu-badge
+							class="duration"
+							:content="duration"
+							color="secondary"
+						></mu-badge>
+						<mu-badge
+							class="viewcount"
+							:content="viewcount"
+							color="primary"
+						></mu-badge>
+						<mu-badge
+							class="iframe"
+							content="嵌入视频"
+							@click="toShare"
+							color="error"
+						></mu-badge>
+					</div>
+					<div class="m-desc">{{ v.description }}</div>
 					<div></div>
 					<div class="tags">
-						<span class="tag" v-for="t in v.tags" v-text="t" :key="t"></span>
+						<span
+							class="tag"
+							v-for="t in v.tags"
+							v-text="t"
+							:key="t"
+						></span>
 					</div>
 
-					<mu-dialog title="嵌入视频播放器" width="80%" :open.sync="shareDialog">
+					<mu-dialog
+						title="嵌入视频播放器"
+						width="80%"
+						:open.sync="shareDialog"
+					>
 						<vshare v-if="shareDialog" :id="playerInfo.id" />
-						<mu-button slot="actions" flat color="primary" @click="shareDialog=false">关闭</mu-button>
+						<mu-button
+							slot="actions"
+							flat
+							color="primary"
+							@click="shareDialog = false"
+							>关闭</mu-button
+						>
 					</mu-dialog>
 
 					<div class="stat-wrapper">
-						<statcard-info v-if="stat" :title="playerInfo.title" :load-items="loadItems" ref="stat" />
+						<statcard-info
+							v-if="stat"
+							:title="playerInfo.title"
+							:load-items="loadItems"
+							ref="stat"
+						/>
 					</div>
 				</template>
 			</mu-col>
@@ -62,22 +104,22 @@ export default {
 		playList,
 		statcardInfo,
 		vshare,
-		loading
+		loading,
 	},
 	data() {
 		return {
 			shareDialog: false,
 			info: {
-				snippet: {}
+				snippet: {},
 			},
 			listdata: {
-				items: []
+				items: [],
 			},
 			playerInfo: {},
 			stat: false,
 			loadItems: [],
 			loading: true,
-			error: ""
+			error: "",
 		};
 	},
 	created() {
@@ -117,7 +159,7 @@ export default {
 			return formatCount(this.info.statistics.viewCount);
 		},
 		items() {
-			return this.listdata.items.filter(v => {
+			return this.listdata.items.filter((v) => {
 				if (!v.snippet.resourceId) {
 					return true;
 				}
@@ -126,10 +168,10 @@ export default {
 				}
 				return v.snippet.resourceId.videoId != this.id;
 			});
-		}
+		},
 	},
 	beforeRouteLeave(to, from, next) {
-		if(this.$refs.player){
+		if (this.$refs.player) {
 			this.$refs.player.$destroy();
 		}
 		document.title = "USTREAM - P2P分享";
@@ -144,20 +186,24 @@ export default {
 			this.shareDialog = true;
 		},
 		async getInfo(id) {
-			this.loading = true;
-			this.error=''
-			const { ok, data } = await videoInfo(id);
-			this.loading = false;
-			if (!ok) {
-				return;
+			try {
+				this.loading = true;
+				this.error = "";
+				const { ok, data } = await videoInfo(id);
+				this.loading = false;
+				if (!ok) {
+					return;
+				}
+				this.info = data.items[0] || {};
+				if (!this.info.snippet) {
+					this.error = "视频不存在或无权限";
+					return;
+				}
+				document.title = this.info.snippet.title;
+				await this.getPlayer(id);
+			} catch (e) {
+				this.$toast.error(e.message||e.toString());
 			}
-			this.info = data.items[0] || {};
-			if (!this.info.snippet) {
-				this.error = "视频不存在或无权限";
-				return;
-			}
-			document.title = this.info.snippet.title;
-			await this.getPlayer(id);
 		},
 		async getPlayer(id) {
 			const { ok, data } = await playerInfo(id);
@@ -191,7 +237,7 @@ export default {
 			this.$nextTick(() => {
 				this.stat = true;
 			});
-		}
+		},
 	},
 	watch: {
 		id: {
@@ -203,7 +249,7 @@ export default {
 						this.getRelated(v);
 					}
 				}
-			}
+			},
 		},
 		listId: {
 			immediate: true,
@@ -211,7 +257,7 @@ export default {
 				if (v) {
 					this.getList(v);
 				}
-			}
+			},
 		},
 		"$route.path"() {
 			const n = document.querySelector(".m-title");
@@ -220,8 +266,8 @@ export default {
 			} else {
 				window.scrollTo(0, 0);
 			}
-		}
-	}
+		},
+	},
 };
 </script>
 
