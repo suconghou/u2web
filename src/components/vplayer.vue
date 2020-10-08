@@ -757,7 +757,7 @@ export default {
 								i++;
 								setTimeout(() => {
 									this.updateLoadBar(v.buffered, v.duration);
-								}, 100 * i);
+								}, 800 * i);
 							});
 						});
 					});
