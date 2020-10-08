@@ -447,7 +447,7 @@ const def = {
 	end: 1048576,
 };
 
-import { timeDuration, addEventListenerOnce, webp } from "@/utils";
+import { timeDuration, addEventListenerOnce, webm } from "@/utils";
 import delayer from "@/utils/delayer";
 import { imgSrc, videoBaseURL } from "@/service";
 
@@ -623,7 +623,7 @@ export default {
 		qlist() {
 			const r = [];
 			const s = this.playerInfo.streams;
-			const videos = webp ? types.webm.video : types.mp4.video;
+			const videos = webm ? types.webm.video : types.mp4.video;
 			for (let groupkeys of prefer_keys) {
 				for (let q of groupkeys) {
 					const itags = videos[q];
@@ -688,7 +688,7 @@ export default {
 			this.$nextTick(() => {
 				this.v = true;
 				this.$nextTick(() => {
-					const loadItem = webp ? this.webm : this.mp4;
+					const loadItem = webm ? this.webm : this.mp4;
 					if (!loadItem.length) {
 						this.video.error = "资源不存在或不支持";
 						return;

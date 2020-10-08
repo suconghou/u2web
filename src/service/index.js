@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Toast from 'muse-ui-toast';
 Vue.use(Toast);
 import axios from 'axios'
-import { webp } from '@/utils'
 
 // 编译为组件时 videoBaseURL 必须为https绝对地址
 const abs = 'https://stream.pull.workers.dev/video' // "https://video.feds.club/video"
