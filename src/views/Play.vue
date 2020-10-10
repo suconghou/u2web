@@ -7,6 +7,7 @@
 				:player-info="playerInfo"
 				:autoplay="autoplay"
 				:audio="audio"
+				:level="level"
 			/>
 			<menulist ref="playlist" :playlist="playlist" @play="toPlay" v-show="showlist" />
 		</template>
@@ -25,6 +26,10 @@ export default {
 		v: {
 			type: String,
 			required: true
+		},
+		level:{
+			type:Number,
+			default:0,
 		},
 		autoplay: {
 			type: Boolean,

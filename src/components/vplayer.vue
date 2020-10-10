@@ -425,19 +425,23 @@ const types = {
 	},
 };
 
+const key_groups = {
+	1: [["240p", "144p"]],
+	2: [
+		["360p", "480p", "240p", "144p"],
+		["720p", "1080p", "720p60", "1080p60"],
+	],
+	3: [
+		["240p", "144p"],
+		["360p"],
+		["480p"],
+		["720p", "720p60"],
+		["1080p", "1080p60"],
+	],
+};
+
 // P2P优化模式只保留360P,720P
-const prefer_keys = sessionStorage.normal
-	? [
-			["240", "144p"],
-			["360p"],
-			["480p"],
-			["720p", "720p60"],
-			["1080p", "1080p60"],
-	  ]
-	: [
-			["360p", "480p", "240p", "144p"],
-			["720p", "1080p", "720p60", "1080p60"],
-	  ];
+const prefer_keys = sessionStorage.normal ? key_groups[3] : key_groups[2];
 
 const def = {
 	req: "",
@@ -520,8 +524,12 @@ export default {
 			default: false,
 		},
 		firstItag: {
-			type:[Number,String],
-			default:localStorage.getItem("itag")
+			type: [Number, String],
+			default: localStorage.getItem("itag"),
+		},
+		level: {
+			type: Number,
+			default: 0,
 		},
 	},
 	data() {
@@ -580,13 +588,19 @@ export default {
 				backgroundImage: `url("${this.posterImg}")`,
 			};
 		},
+		prefer_keys() {
+			if (key_groups[this.level]) {
+				return key_groups[this.level];
+			}
+			return prefer_keys;
+		},
 		mp4() {
 			const r = [];
 			const s = this.playerInfo.streams;
 			if (!this.audio) {
-				const firstItag = this.firstItag;
-				if (canplay(s[firstItag])) {
-					r.push(format(s[firstItag], this.playerInfo));
+				const f = this.firstItag;
+				if (canplay(s[f]) && this.qlist.find((t) => t.itag == f)) {
+					r.push(format(s[f], this.playerInfo));
 				} else {
 					const v = getvideo(s, this.qlist);
 					if (v) {
@@ -604,9 +618,9 @@ export default {
 			const r = [];
 			const s = this.playerInfo.streams;
 			if (!this.audio) {
-				const firstItag = this.firstItag;
-				if (canplay(s[firstItag])) {
-					r.push(format(s[firstItag], this.playerInfo));
+				const f = this.firstItag;
+				if (canplay(s[f]) && this.qlist.find((t) => t.itag == f)) {
+					r.push(format(s[f], this.playerInfo));
 				} else {
 					const v = getvideo(s, this.qlist);
 					if (v) {
@@ -624,7 +638,7 @@ export default {
 			const r = [];
 			const s = this.playerInfo.streams;
 			const videos = webm ? types.webm.video : types.mp4.video;
-			for (let groupkeys of prefer_keys) {
+			for (let groupkeys of this.prefer_keys) {
 				for (let q of groupkeys) {
 					const itags = videos[q];
 					if (!itags) {
