@@ -451,7 +451,13 @@ const def = {
 	end: 1048576,
 };
 
-import { timeDuration, addEventListenerOnce, webm } from "@/utils";
+import {
+	timeDuration,
+	addEventListenerOnce,
+	webm,
+	debounce,
+	asyncQueue,
+} from "@/utils";
 import delayer from "@/utils/delayer";
 import { imgSrc, videoBaseURL } from "@/service";
 
@@ -508,6 +514,15 @@ const getaudio = (s, itags) => {
 		}
 	}
 };
+
+const tickEnd = debounce((self) => {
+	const v = self.$refs.video;
+	if (v.duration - v.currentTime < 1) {
+		self.onPlayEnd();
+	}
+}, 900);
+
+const taskQueue = new asyncQueue([]);
 
 export default {
 	props: {
@@ -692,6 +707,7 @@ export default {
 		},
 		init() {
 			this.$emit("init");
+			taskQueue.clear();
 			if (this.$refs.video) {
 				this.$refs.video.pause();
 			}
@@ -732,17 +748,10 @@ export default {
 							this.video.played = played;
 							this.video.currentTime = v.currentTime;
 						});
+						tickEnd(this);
 					});
 					v.addEventListener("ended", () => {
-						if (this.video.cycle == 1) {
-							setTimeout(() => {
-								v.play().catch((err) => console.info(err));
-							}, 1000);
-						} else {
-							if (this.audio) {
-								this.$emit("ended", this.playerInfo);
-							}
-						}
+						this.onPlayEnd();
 					});
 					v.addEventListener("loadedmetadata", () => {
 						this.playSpeed();
@@ -766,12 +775,18 @@ export default {
 						);
 						// 移动端没有progress事件,只能用这个更新
 						loaders.forEach((loader) => {
-							let i = 0;
 							loader.listen("res.done", () => {
-								i++;
-								setTimeout(() => {
-									this.updateLoadBar(v.buffered, v.duration);
-								}, 800 * i);
+								taskQueue.push(() => {
+									return new Promise((resolve, reject) => {
+										setTimeout(() => {
+											this.updateLoadBar(
+												v.buffered,
+												v.duration
+											);
+											resolve();
+										}, 100);
+									});
+								});
 							});
 						});
 					});
@@ -792,6 +807,26 @@ export default {
 					this.$emit("load", loadItem);
 				});
 			});
+		},
+		onPlayEnd() {
+			const v = this.$refs.video;
+			if (this.video.cycle == 1) {
+				v.currentTime = 0;
+				this.video.currentTime = 0;
+			} else {
+				v.removeAttribute("autoplay");
+				v.autoplay = false;
+				setTimeout(() => {
+					v.currentTime = 0;
+					this.video.currentTime = 0;
+					setTimeout(() => {
+						v.pause();
+					}, 20);
+				}, 20);
+				if (this.audio) {
+					this.$emit("ended", this.playerInfo);
+				}
+			}
 		},
 		reset() {
 			this.video = {
