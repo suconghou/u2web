@@ -29,6 +29,18 @@
 				</div>
 			</div>
 			<div
+				class="clickplay"
+				v-if="clickplay && paused"
+				@click.stop.prevent="playVideo"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+					<path
+						d="M17.28,9l-12.75-8A1,1,0,0,0,3,1.91V17.85a1,1,0,0,0,1.53.85l12.75-8A1,1,0,0,0,17.28,9Z"
+					/>
+				</svg>
+			</div>
+
+			<div
 				class="poster"
 				v-if="!video.duration || audio"
 				:style="poster"
@@ -577,6 +589,7 @@ export default {
 				quality: "",
 				itag: 0,
 			},
+			clickplay: false,
 		};
 	},
 	computed: {
@@ -756,12 +769,26 @@ export default {
 					v.addEventListener("loadedmetadata", () => {
 						this.playSpeed();
 						if (this.autoplay) {
-							v.play().catch((err) => console.info(err));
+							v.play()
+								.then(() => {
+									this.clickplay = false;
+								})
+								.catch((err) => {
+									this.clickplay = true;
+									console.info(err);
+								});
 						}
 					});
 					v.addEventListener("canplay", () => {
 						if (this.autoplay) {
-							v.play().catch((err) => console.info(err));
+							v.play()
+								.then(() => {
+									this.clickplay = false;
+								})
+								.catch((err) => {
+									this.clickplay = true;
+									console.info(err);
+								});
 						}
 					});
 
@@ -814,15 +841,22 @@ export default {
 				v.currentTime = 0;
 				this.video.currentTime = 0;
 			} else {
+				const vol = v.volume;
+				v.volume = 0;
 				v.removeAttribute("autoplay");
 				v.autoplay = false;
+				v.currentTime = 0;
+				this.video.currentTime = 0;
 				setTimeout(() => {
-					v.currentTime = 0;
-					this.video.currentTime = 0;
+					v.pause();
+				}, 100);
+				setTimeout(() => {
+					v.pause();
+					v.volume = vol;
 					setTimeout(() => {
-						v.pause();
-					}, 20);
-				}, 20);
+						this.paused = true;
+					}, 120);
+				}, 180);
 				if (this.audio) {
 					this.$emit("ended", this.playerInfo);
 				}
@@ -928,7 +962,15 @@ export default {
 			this.$refs.video.pause();
 		},
 		playVideo() {
-			this.$refs.video.play().catch((err) => console.info(err));
+			this.$refs.video
+				.play()
+				.then(() => {
+					this.clickplay = false;
+				})
+				.catch((err) => {
+					this.clickplay = true;
+					console.info(err);
+				});
 		},
 		muteoff() {
 			this.$refs.video.muted = false;
@@ -1190,6 +1232,9 @@ export default {
 				position: absolute;
 				z-index: 12;
 			}
+			.clickplay {
+				display: none;
+			}
 			.poster {
 				width: 170px;
 				height: 100px;
@@ -1260,6 +1305,34 @@ export default {
 			background: url("https://assets.suconghou.cn/load.gif") no-repeat
 				center;
 			background-size: 40px;
+		}
+		.clickplay {
+			cursor: pointer;
+			width: 42px;
+			height: 42px;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			position: absolute;
+			background: rgba(1, 1, 1, 0.5);
+			border-radius: 50%;
+			border: 2px solid #eee;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			box-shadow: 0 0 6px #eee;
+			svg {
+				fill: #eee;
+				width: 18px;
+				height: 18px;
+			}
+			&:hover {
+				border-color: #fff;
+				box-shadow: 0 0 6px #fff;
+				svg {
+					fill: #fff;
+				}
+			}
 		}
 		.poster {
 			background-size: contain;
