@@ -529,6 +529,9 @@ const getaudio = (s, itags) => {
 
 const tickEnd = debounce((self) => {
 	const v = self.$refs.video;
+	if (!v) {
+		return;
+	}
 	if (v.duration - v.currentTime < 1) {
 		self.onPlayEnd();
 	}
@@ -861,6 +864,8 @@ export default {
 					this.$emit("ended", this.playerInfo);
 				}
 			}
+			// 长视频此处需要cachefill
+			loader.seekTo(1);
 		},
 		reset() {
 			this.video = {
@@ -1174,13 +1179,14 @@ export default {
 					font-size: 12px;
 				}
 				.volume-wrap {
-					padding: 7px 5px 0 0;
+					padding: 0 5px 0 0;
+					top: 7px;
 					svg {
 						width: 14px;
 						height: 14px;
 					}
 					.vol-bar-wrap {
-						top: -70px;
+						top: -78px;
 						height: 78px;
 						left: 6px;
 						.vol-bar {

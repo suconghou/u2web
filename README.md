@@ -88,6 +88,10 @@ v: {
     type: String,
     required: true
 },
+level : {
+    type:Number,
+    default:0,
+},
 autoplay: {
     type: Boolean,
     default: true
@@ -101,6 +105,23 @@ playlist: {
     default: ""
 }
 ```
+
+`level` 可配置 `1` `2` `3` 对应不同权限的清晰度
+
+`playlist`仅在`audio`模式下可用,
+
+可取值为一个播放列表ID,或者一个数组形式为
+
+```
+[
+    {
+        v:'视频ID',
+        title:'名称'
+    }
+]
+```
+
+`audio`模式需开启`autoplay`
 
 本项目仅作为学习使用,切勿用作其他用途
 

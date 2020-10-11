@@ -1,5 +1,5 @@
 <template>
-	<div style="width:100%;height:100%">
+	<div style="width: 100%; height: 100%">
 		<template v-if="playerInfo.id">
 			<vplayer
 				@list="playList"
@@ -9,7 +9,12 @@
 				:audio="audio"
 				:level="level"
 			/>
-			<menulist ref="playlist" :playlist="playlist" @play="toPlay" v-show="showlist" />
+			<menulist
+				ref="playlist"
+				:playlist="playlist"
+				@play="toPlay"
+				v-show="showlist"
+			/>
 		</template>
 		<div v-else :style="poster"></div>
 	</div>
@@ -25,46 +30,46 @@ export default {
 	props: {
 		v: {
 			type: String,
-			required: true
+			required: true,
 		},
-		level:{
-			type:Number,
-			default:0,
+		level: {
+			type: Number,
+			default: 0,
 		},
 		autoplay: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		audio: {
 			type: Boolean,
-			default: true
+			default: true,
 		},
 		playlist: {
 			type: [String, Array],
-			default: ""
-		}
+			default: "",
+		},
 	},
 	components: {
 		vplayer,
-		menulist
+		menulist,
 	},
 	computed: {
 		poster() {
 			return {
-				backgroundImage: `url("${imgSrc(this.v)}")`
+				backgroundImage: `url("${imgSrc(this.v)}")`,
 			};
-		}
+		},
 	},
 	data() {
 		return {
 			playerInfo: {},
-			showlist: false
+			showlist: false,
 		};
 	},
 	mounted() {
-		setTimeout(()=>{
+		setTimeout(() => {
 			this.init(this.v);
-		},50)
+		}, 50);
 	},
 	methods: {
 		async init(v) {
@@ -82,8 +87,8 @@ export default {
 		},
 		toPlay(v) {
 			this.init(v);
-		}
-	}
+		},
+	},
 };
 </script>
 
