@@ -8,6 +8,7 @@
 				:autoplay="autoplay"
 				:audio="audio"
 				:level="level"
+				:nop2p="nop2p"
 			/>
 			<menulist
 				ref="playlist"
@@ -47,6 +48,10 @@ export default {
 		playlist: {
 			type: [String, Array],
 			default: "",
+		},
+		nop2p: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	components: {

@@ -513,7 +513,7 @@ const format = (item, playerInfo) => {
 };
 
 const getvideo = (s, qlist) => {
-	for (let q of qlist.reverse()) {
+	for (let q of [...qlist].reverse()) {
 		const itag = q.itag;
 		return s[itag];
 	}
@@ -560,6 +560,10 @@ export default {
 		level: {
 			type: Number,
 			default: 0,
+		},
+		nop2p: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	data() {
@@ -794,7 +798,7 @@ export default {
 								});
 						}
 					});
-
+					def.nop2p = this.nop2p
 					loader = new fastloadjs(def);
 					loader.listen("ready", (loaders, dispatchs, initdatas) => {
 						this.$emit(
