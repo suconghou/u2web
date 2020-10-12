@@ -698,7 +698,10 @@ export default {
 			return r.reverse();
 		},
 	},
-	created() {},
+	created() {
+		document.addEventListener("fullscreenchange", this.fullscreenchange);
+		document.addEventListener('webkitfullscreenchange',this.fullscreenchange)
+	},
 	mounted() {
 		this.init();
 		delay = new delayer(
@@ -714,9 +717,18 @@ export default {
 		);
 	},
 	beforeDestroy() {
+		document.removeEventListener("fullscreenchange", this.fullscreenchange);
+		document.removeEventListener('webkitfullscreenchange',this.fullscreenchange)
 		this.destroy();
 	},
 	methods: {
+		fullscreenchange() {
+				this.small = !(
+					document.fullScreen ||
+					document.mozFullScreen ||
+					document.webkitIsFullScreen
+				);
+		},
 		destroy() {
 			if (loader) {
 				loader.destroy();
@@ -991,7 +1003,13 @@ export default {
 		},
 		async toFull() {
 			try {
-				await this.$el.requestFullscreen();
+				const el = this.$el;
+				const rfs =
+					el.requestFullScreen ||
+					el.webkitRequestFullScreen ||
+					el.mozRequestFullScreen ||
+					el.msRequestFullScreen;
+				await rfs.call(el);
 				this.small = false;
 			} catch (e) {
 				this.small = true;
@@ -999,7 +1017,13 @@ export default {
 		},
 		async exitFull() {
 			try {
-				await document.exitFullscreen();
+				const el = document;
+				const cfs =
+					el.cancelFullScreen ||
+					el.webkitCancelFullScreen ||
+					el.mozCancelFullScreen ||
+					el.exitFullScreen;
+				await cfs.call(el);
 				this.small = true;
 			} catch (e) {
 				this.small = false;
