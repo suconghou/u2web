@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="vplayer"
-		:class="{ full: full, audio: audio }"
+		:class="{ full: full, audio: audio, fullscreen: !small }"
 		tabindex="1"
 		@keydown.space.stop.prevent="togglePlay"
 		@keydown.left.stop.prevent="seek(-5)"
@@ -798,7 +798,7 @@ export default {
 								});
 						}
 					});
-					def.nop2p = this.nop2p
+					def.nop2p = this.nop2p;
 					loader = new fastloadjs(def);
 					loader.listen("ready", (loaders, dispatchs, initdatas) => {
 						this.$emit(
@@ -989,17 +989,17 @@ export default {
 			this.$refs.video.muted = true;
 			this.muted = true;
 		},
-		toFull() {
+		async toFull() {
 			try {
-				this.$el.requestFullscreen();
+				await this.$el.requestFullscreen();
 				this.small = false;
 			} catch (e) {
 				this.small = true;
 			}
 		},
-		exitFull() {
+		async exitFull() {
 			try {
-				document.exitFullscreen();
+				await document.exitFullscreen();
 				this.small = true;
 			} catch (e) {
 				this.small = false;
@@ -1104,6 +1104,13 @@ export default {
 				this.init();
 			}
 		},
+		full(v) {
+			if (v) {
+				document.body.style.overflow = "hidden";
+			} else {
+				document.body.style.overflow = "visible";
+			}
+		},
 	},
 	filters: {
 		timeformat(t) {
@@ -1127,8 +1134,8 @@ export default {
 }
 .vplayer {
 	width: 100%;
-	min-height: 400px;
-	// height: 100%; // 组件模式需使用100%,使用此行,注释掉上面一行
+	height: 0;
+	padding-bottom: 56.25%;
 	position: relative;
 	overflow: hidden;
 	user-select: none;
@@ -1136,9 +1143,14 @@ export default {
 	font-size: 14px;
 	background: #282828;
 	outline: none;
+	&.fullscreen {
+		padding: 0;
+		height: 100%;
+	}
 	&.audio {
 		min-height: 100px;
 		height: initial;
+		padding: 0;
 		.controls {
 			background: #333;
 			.bottom {
@@ -1258,8 +1270,9 @@ export default {
 		right: 0;
 		top: 0;
 		bottom: 0;
-		max-height: 100%;
+		height: 100%;
 		z-index: 9999;
+		padding: 0;
 	}
 	.video,
 	.controls,

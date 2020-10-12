@@ -79,8 +79,7 @@ https://github.com/suconghou/signalserver
 编译为组件模式
 
 1. 修改`service/index.js`中abs变量为https绝对地址
-2. 修改`vplayer.vue`中`.vplayer`css`height: 100%`
-3. 执行 `yarn buildwc`
+2. 执行 `yarn buildwc`
 
 参数
 ```
@@ -104,6 +103,11 @@ playlist: {
     type: [String, Array],
     default: ""
 }
+nop2p: {
+    type: Boolean,
+    default: false,
+},
+
 ```
 
 `level` 可配置 `1` `2` `3` 对应不同权限的清晰度

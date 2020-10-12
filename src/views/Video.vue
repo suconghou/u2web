@@ -272,16 +272,6 @@ export default {
 </script>
 
 <style lang="less">
-@media (max-width: 900px) {
-	.vplayer {
-		min-height: 260px;
-	}
-	.video-player {
-		.vplayer-wrapper {
-			min-height: 260px !important;
-		}
-	}
-}
 .video-player {
 	margin-top: 80px;
 	.v-error {
@@ -293,8 +283,8 @@ export default {
 		margin-top: 70px;
 	}
 	.vplayer-wrapper {
-		min-height: 360px;
-		max-height: 500px;
+		height: 0;
+		padding-bottom: 56.25%;
 		&.loading {
 			background: url("https://assets.suconghou.cn/load.gif") no-repeat
 				center #eee;

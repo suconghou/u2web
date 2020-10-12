@@ -1,5 +1,5 @@
 <template>
-	<div style="width: 100%; height: 100%">
+	<div :style="style">
 		<template v-if="playerInfo.id">
 			<vplayer
 				@list="playList"
@@ -62,6 +62,19 @@ export default {
 		poster() {
 			return {
 				backgroundImage: `url("${imgSrc(this.v)}")`,
+			};
+		},
+		style() {
+			if (this.audio) {
+				return {
+					width: "100%",
+					height: "100%",
+				};
+			}
+			return {
+				width: "100%",
+				height: "0",
+				"padding-bottom": "56.25%",
 			};
 		},
 	},
