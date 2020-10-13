@@ -9,6 +9,7 @@
 				:audio="audio"
 				:level="level"
 				:nop2p="nop2p"
+				:screenshot="screenshot"
 			/>
 			<menulist
 				ref="playlist"
@@ -52,6 +53,10 @@ export default {
 		nop2p: {
 			type: Boolean,
 			default: false,
+		},
+		screenshot: {
+			type: Boolean,
+			default: true,
 		},
 	},
 	components: {
