@@ -97,7 +97,7 @@ autoplay: {
 },
 audio: {
     type: Boolean,
-    default: true
+    default: false
 },
 playlist: {
     type: [String, Array],
@@ -113,6 +113,8 @@ screenshot: {
 },
 
 ```
+
+作为`web component`组件,所有参数默认均为零值,需自己按需设置值
 
 `level` 可配置 `1` `2` `3` 对应不同权限的清晰度
 

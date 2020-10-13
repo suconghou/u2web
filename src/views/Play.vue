@@ -44,7 +44,7 @@ export default {
 		},
 		audio: {
 			type: Boolean,
-			default: true,
+			default: false,
 		},
 		playlist: {
 			type: [String, Array],
