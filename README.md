@@ -107,6 +107,10 @@ nop2p: {
     type: Boolean,
     default: false,
 },
+screenshot: {
+    type: Boolean,
+    default: true,
+},
 
 ```
 
@@ -126,6 +130,10 @@ nop2p: {
 ```
 
 `audio`模式需开启`autoplay`
+
+`screenshot`截图默认开启,播放器聚焦时快捷键`s`可直接触发
+
+`safari`不支持对`mse`的视频截图,已对其屏蔽,见`https://github.com/video-dev/hls.js/issues/1806`
 
 本项目仅作为学习使用,切勿用作其他用途
 

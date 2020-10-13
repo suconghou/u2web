@@ -6,6 +6,8 @@
 		@keydown.space.stop.prevent="togglePlay"
 		@keydown.left.stop.prevent="seek(-5)"
 		@keydown.right.stop.prevent="seek(5)"
+		@keydown.s.prevent="doScreenShot"
+		@keydown.f.prevent="toggleFull"
 	>
 		<div
 			class="controls"
@@ -173,6 +175,22 @@
 							/>
 						</svg>
 					</div>
+					<div
+						class="screenshot"
+						v-if="!audio && screenshot && !safari"
+					>
+						<svg
+							@click="doScreenShot"
+							viewBox="0 0 1024 1024"
+							version="1.1"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M829.187059 851.213725 194.811918 851.213725c-31.577183 0-57.269331-25.691125-57.269331-57.269331L137.542586 311.115783c0-16.880459 7.28901-31.888268 20.524452-42.260499 12.713556-9.959839 29.820166-15.008832 50.841945-15.008832l37.492916 0 3.964288-25.77606c0.714268-15.365966 9.69071-30.184463 24.87555-40.923038 12.722766-8.991792 28.765137-14.362102 42.920532-14.362102l222.033909 0c14.037714 0 30.450523 5.17179 43.895743 13.83203 17.006326 10.952446 26.675546 25.607214 27.424606 41.449018l3.964288 25.780153 227.805356 0c14.240329 0 25.174356 12.174274 30.430056 19.434631 8.215102 11.355629 12.743232 24.791639 12.743232 37.833677l0 482.82861C886.456391 825.521576 860.765265 851.213725 829.187059 851.213725L829.187059 851.213725zM210.786751 308.219827c-16.523325 0-12.760628 9.500375-12.760628 21.760606l0 449.880197c0 6.92676 5.635347 12.56313 12.56313 12.56313l603.163279 0c6.92676 0 12.56313-5.636371 12.56313-12.56313L826.315662 320.788074c0-4.956895 1.118474-12.568247-11.672854-12.568247-42.711777 0-240.016469 0-240.016469 0s-7.028067-46.033429-9.677407-61.318554c-0.696872-4.021593-4.00829-9.06854-6.560416-11.620665-5.219885-5.219885-13.860682-4.066619-16.630772-4.066619l-212.833363-0.061398c-4.89345 0-13.503549-0.720408-18.35095 4.128017-5.628184 5.628184-5.565762 11.620665-5.565762 11.620665l-9.432837 61.322647L210.786751 308.219827zM428.227038 710.539822c-94.692662 0-171.73227-77.04063-171.73227-171.73227 0-94.695732 77.039607-171.735339 171.73227-171.735339 94.695732 0 171.735339 77.039607 171.735339 171.735339C599.962378 633.499192 522.92277 710.539822 428.227038 710.539822L428.227038 710.539822zM428.227038 413.402401c-69.146846 0-125.406175 56.255235-125.406175 125.405151 0 69.146846 56.260351 125.406175 125.406175 125.406175 69.148893 0 125.405151-56.256258 125.405151-125.406175S497.375931 413.402401 428.227038 413.402401L428.227038 413.402401zM755.026012 435.941743l-117.455085 0c-13.514805 0-24.468275-10.956539-24.468275-24.467251 0-13.515828 10.952446-24.472368 24.468275-24.472368l117.455085 0c13.514805 0 24.466228 10.956539 24.466228 24.472368C779.493264 424.985204 768.540817 435.941743 755.026012 435.941743L755.026012 435.941743zM746.56327 432.41543"
+							></path>
+						</svg>
+					</div>
+
 					<div class="audio-list" v-if="audio">
 						<svg
 							@click="$emit('list')"
@@ -471,6 +489,7 @@ import {
 	asyncQueue,
 } from "@/utils";
 import delayer from "@/utils/delayer";
+import { download } from "@/utils/arraybuffer";
 import { imgSrc, videoBaseURL } from "@/service";
 
 let loader, timer, delay;
@@ -565,6 +584,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		screenshot: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	data() {
 		return {
@@ -597,6 +620,7 @@ export default {
 				itag: 0,
 			},
 			clickplay: false,
+			safari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
 		};
 	},
 	computed: {
@@ -700,7 +724,10 @@ export default {
 	},
 	created() {
 		document.addEventListener("fullscreenchange", this.fullscreenchange);
-		document.addEventListener('webkitfullscreenchange',this.fullscreenchange)
+		document.addEventListener(
+			"webkitfullscreenchange",
+			this.fullscreenchange
+		);
 	},
 	mounted() {
 		this.init();
@@ -718,16 +745,19 @@ export default {
 	},
 	beforeDestroy() {
 		document.removeEventListener("fullscreenchange", this.fullscreenchange);
-		document.removeEventListener('webkitfullscreenchange',this.fullscreenchange)
+		document.removeEventListener(
+			"webkitfullscreenchange",
+			this.fullscreenchange
+		);
 		this.destroy();
 	},
 	methods: {
 		fullscreenchange() {
-				this.small = !(
-					document.fullScreen ||
-					document.mozFullScreen ||
-					document.webkitIsFullScreen
-				);
+			this.small = !(
+				document.fullScreen ||
+				document.mozFullScreen ||
+				document.webkitIsFullScreen
+			);
 		},
 		destroy() {
 			if (loader) {
@@ -898,11 +928,15 @@ export default {
 			};
 		},
 		getTime(dst) {
-			let time = dst * this.$refs.video.duration;
+			const v = this.$refs.video;
+			if (!v) {
+				return;
+			}
+			let time = dst * v.duration;
 			if (time < 0) {
 				time = 0;
-			} else if (time > this.$refs.video.duration) {
-				time = this.$refs.video.duration;
+			} else if (time > v.duration) {
+				time = v.duration;
 			}
 			return time;
 		},
@@ -1120,6 +1154,25 @@ export default {
 				var width = endX - startX;
 				ctx.fillRect(startX, 0, width, c.height);
 			}
+		},
+		doScreenShot() {
+			// safari screenshot blank images  https://github.com/video-dev/hls.js/issues/1806
+			if (!this.screenshot || this.safari) {
+				return;
+			}
+			const v = this.$refs.video;
+			if (!v.videoWidth || !v.videoHeight) {
+				return;
+			}
+			const canvas = document.createElement("canvas");
+			canvas.width = v.videoWidth;
+			canvas.height = v.videoHeight;
+			const ctx = canvas.getContext("2d");
+			ctx.drawImage(v, 0, 0);
+			canvas.toBlob((b) => {
+				const name = `screenshot-${+new Date()}.png`;
+				download(b, name);
+			});
 		},
 	},
 	watch: {
@@ -1620,6 +1673,7 @@ export default {
 				}
 			}
 		}
+		.screenshot,
 		.full-screen,
 		.fake-full {
 			float: right;
@@ -1643,6 +1697,15 @@ export default {
 		}
 		.fake-full {
 			margin-right: 2px;
+		}
+		.screenshot {
+			margin-right: 0;
+			width: 37px;
+			padding-top: 5px;
+			svg {
+				width: 26px;
+				height: 26px;
+			}
 		}
 		.quality-list {
 			float: right;
