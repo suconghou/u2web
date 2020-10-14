@@ -492,7 +492,6 @@ import delayer from "@/utils/delayer";
 import { download } from "@/utils/arraybuffer";
 import { imgSrc, videoBaseURL } from "@/service";
 
-
 const canplay = (t) => {
 	if (t && t.len) {
 		return (
@@ -555,7 +554,6 @@ const tickEnd = debounce((self) => {
 	}
 }, 900);
 
-
 export default {
 	props: {
 		playerInfo: {
@@ -589,9 +587,9 @@ export default {
 	},
 	data() {
 		return {
-			delay:null,
-			taskQueue: Object.freeze(new asyncQueue([])),
-			loader:null,
+			delay: null,
+			taskQueue: new asyncQueue([]),
+			loader: null,
 			muted: false,
 			paused: true,
 			small: true,
@@ -732,7 +730,7 @@ export default {
 	},
 	mounted() {
 		this.init();
-		this.delay = Object.freeze(new delayer(
+		this.delay = new delayer(
 			() => {
 				if (!this.audio) {
 					this.bottomHide = true;
@@ -742,7 +740,7 @@ export default {
 				this.bottomHide = false;
 			},
 			2000
-		));
+		);
 	},
 	beforeDestroy() {
 		this.taskQueue.clear();
@@ -842,31 +840,39 @@ export default {
 								});
 						}
 					});
-					this.loader = Object.freeze(new fastloadjs({...def,...{nop2p:this.nop2p}}));
-					this.loader.listen("ready", (loaders, dispatchs, initdatas) => {
-						this.$emit(
-							"loadersready",
-							loaders,
-							dispatchs,
-							initdatas
-						);
-						// 移动端没有progress事件,只能用这个更新
-						loaders.forEach((loader) => {
-							loader.listen("res.done", () => {
-								this.taskQueue.push(() => {
-									return new Promise((resolve, reject) => {
-										setTimeout(() => {
-											this.updateLoadBar(
-												v.buffered,
-												v.duration
-											);
-											resolve();
-										}, 100);
+					this.loader = new fastloadjs({
+						...def,
+						...{ nop2p: this.nop2p },
+					});
+					this.loader.listen(
+						"ready",
+						(loaders, dispatchs, initdatas) => {
+							this.$emit(
+								"loadersready",
+								loaders,
+								dispatchs,
+								initdatas
+							);
+							// 移动端没有progress事件,只能用这个更新
+							loaders.forEach((loader) => {
+								loader.listen("res.done", () => {
+									this.taskQueue.push(() => {
+										return new Promise(
+											(resolve, reject) => {
+												setTimeout(() => {
+													this.updateLoadBar(
+														v.buffered,
+														v.duration
+													);
+													resolve();
+												}, 100);
+											}
+										);
 									});
 								});
 							});
-						});
-					});
+						}
+					);
 					this.loader.listen("error", (err) => {
 						this.video.error = err;
 						this.loader && this.loader.pause();
@@ -887,6 +893,9 @@ export default {
 		},
 		onPlayEnd() {
 			const v = this.$refs.video;
+			if(!v){
+				return
+			}
 			if (this.video.cycle == 1) {
 				v.currentTime = 0;
 				this.video.currentTime = 0;
