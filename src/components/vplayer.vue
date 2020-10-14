@@ -492,7 +492,6 @@ import delayer from "@/utils/delayer";
 import { download } from "@/utils/arraybuffer";
 import { imgSrc, videoBaseURL } from "@/service";
 
-let loader, timer, delay;
 
 const canplay = (t) => {
 	if (t && t.len) {
@@ -556,7 +555,6 @@ const tickEnd = debounce((self) => {
 	}
 }, 900);
 
-const taskQueue = new asyncQueue([]);
 
 export default {
 	props: {
@@ -591,6 +589,9 @@ export default {
 	},
 	data() {
 		return {
+			delay:null,
+			taskQueue: Object.freeze(new asyncQueue([])),
+			loader:null,
 			muted: false,
 			paused: true,
 			small: true,
@@ -731,7 +732,7 @@ export default {
 	},
 	mounted() {
 		this.init();
-		delay = new delayer(
+		this.delay = Object.freeze(new delayer(
 			() => {
 				if (!this.audio) {
 					this.bottomHide = true;
@@ -741,9 +742,10 @@ export default {
 				this.bottomHide = false;
 			},
 			2000
-		);
+		));
 	},
 	beforeDestroy() {
+		this.taskQueue.clear();
 		document.removeEventListener("fullscreenchange", this.fullscreenchange);
 		document.removeEventListener(
 			"webkitfullscreenchange",
@@ -760,21 +762,21 @@ export default {
 			);
 		},
 		destroy() {
-			if (loader) {
-				loader.destroy();
-			}
 			if (this.$refs.video) {
 				this.$refs.video.pause();
+			}
+			if (this.loader) {
+				this.loader.destroy();
 			}
 		},
 		init() {
 			this.$emit("init");
-			taskQueue.clear();
+			this.taskQueue.clear();
 			if (this.$refs.video) {
 				this.$refs.video.pause();
 			}
-			if (loader) {
-				loader.destroy();
+			if (this.loader) {
+				this.loader.destroy();
 			}
 			this.v = false;
 			this.$nextTick(() => {
@@ -840,9 +842,8 @@ export default {
 								});
 						}
 					});
-					def.nop2p = this.nop2p;
-					loader = new fastloadjs(def);
-					loader.listen("ready", (loaders, dispatchs, initdatas) => {
+					this.loader = Object.freeze(new fastloadjs({...def,...{nop2p:this.nop2p}}));
+					this.loader.listen("ready", (loaders, dispatchs, initdatas) => {
 						this.$emit(
 							"loadersready",
 							loaders,
@@ -852,7 +853,7 @@ export default {
 						// 移动端没有progress事件,只能用这个更新
 						loaders.forEach((loader) => {
 							loader.listen("res.done", () => {
-								taskQueue.push(() => {
+								this.taskQueue.push(() => {
 									return new Promise((resolve, reject) => {
 										setTimeout(() => {
 											this.updateLoadBar(
@@ -866,11 +867,11 @@ export default {
 							});
 						});
 					});
-					loader.listen("error", (err) => {
+					this.loader.listen("error", (err) => {
 						this.video.error = err;
-						loader && loader.pause();
+						this.loader && this.loader.pause();
 					});
-					loader.attach(v, loadItem);
+					this.loader.attach(v, loadItem);
 					if (!this.audio) {
 						const loadItemVideo = loadItem[0];
 						this.switchQuality({
@@ -911,7 +912,7 @@ export default {
 				}
 			}
 			// 长视频此处需要cachefill
-			loader.seekTo(1);
+			this.loader.seekTo(1);
 		},
 		reset() {
 			this.video = {
@@ -949,10 +950,10 @@ export default {
 			if (s > 0 && s < t) {
 				this.video.currentTime = s;
 				this.$refs.video.currentTime = s;
-				loader.seekTo(s);
+				this.loader.seekTo(s);
 			}
-			delay.reset();
-			delay.delay();
+			this.delay.reset();
+			this.delay.delay();
 		},
 		seekTo(e) {
 			let dx;
@@ -972,7 +973,7 @@ export default {
 			this.$refs.video.currentTime = time;
 			this.tiptime.v = timeDuration(time);
 			this.tiptime.show = true;
-			loader.seekTo(time);
+			this.loader.seekTo(time);
 		},
 		showCurrTime(e) {
 			let dx;
@@ -1099,17 +1100,17 @@ export default {
 			this.$refs.video.muted = this.muted;
 		},
 		maskMouseEnter() {
-			delay.reset();
+			this.delay.reset();
 			requestAnimationFrame(() => {
 				this.$el.focus();
 			});
 		},
 		maskMouseLeave() {
-			delay.do();
+			this.delay.do();
 		},
 		maskMouseMove() {
-			delay.reset();
-			delay.delay();
+			this.delay.reset();
+			this.delay.delay();
 		},
 		switchQuality(item, reload) {
 			this.currq = item;
