@@ -24,10 +24,13 @@
 					<div class="hidebtn" @click.stop="video.error = null">
 						+
 					</div>
-					<p>{{ video.error.stack || video.error }}</p>
-					<p v-if="typeof video.error != 'string'">
-						播放出错,请刷新重试
-					</p>
+					<p v-if="unsupport">此浏览器不支持,请更换浏览器</p>
+					<template v-else>
+						<p>{{ video.error.stack || video.error }}</p>
+						<p v-if="typeof video.error != 'string'">
+							播放出错,请刷新重试
+						</p>
+					</template>
 				</div>
 			</div>
 			<div
@@ -720,6 +723,17 @@ export default {
 			}
 			return r.reverse();
 		},
+		unsupport() {
+			const v = this.video.error;
+			if (!v) {
+				return false;
+			}
+			const s = (v.stack || v).toString();
+			if (s.includes("type provided") && s.includes("unsupported")) {
+				return true;
+			}
+			return false;
+		},
 	},
 	created() {
 		document.addEventListener("fullscreenchange", this.fullscreenchange);
@@ -893,8 +907,8 @@ export default {
 		},
 		onPlayEnd() {
 			const v = this.$refs.video;
-			if(!v){
-				return
+			if (!v) {
+				return;
 			}
 			if (this.video.cycle == 1) {
 				v.currentTime = 0;
