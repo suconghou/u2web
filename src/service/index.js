@@ -71,8 +71,21 @@ export const videoInfo = (id) => {
     return http.get('/videos', { params })
 }
 
-export const playerInfo = (id) => {
-    return player.get(`/${id}.json`)
+export const playerInfo = async (id) => {
+    const urls = videoBaseURL.split(';').filter(i => i)
+    for (let i = 0; i < urls.length; i++) {
+        try {
+            const baseURL = urls[i]
+            const res = await player.get(`/${id}.json`, { baseURL })
+            if (res.ok) {
+                return res
+            }
+        } catch (e) {
+            if (i >= urls.length - 1) {
+                throw e
+            }
+        }
+    }
 }
 
 export const search = (q, pageToken = undefined, channelId = undefined, regionCode = undefined, type = 'video', maxResults = 20) => {

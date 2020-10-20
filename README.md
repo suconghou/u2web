@@ -46,6 +46,8 @@ https://github.com/suconghou/videoproxy
 
 使用cf workers 中转的 https://github.com/suconghou/u2worker
 
+使用netlify functions 中转的 https://github.com/suconghou/netlifyworker
+
 如果要使用多源负载均衡,可以使用多个地址,用`;`号隔开
 
 例如
@@ -54,7 +56,7 @@ https://github.com/suconghou/videoproxy
 
 代表当前域名的和部署在`cf workers`的两个地址负载均衡
 
-注意第一个地址始终占有更高的权重,所有地址必须都可用.
+注意第一个地址始终占有更高的权重,地址不可用后将会重试到其他地址.
 
 
 

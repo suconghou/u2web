@@ -21,7 +21,11 @@
 			<div class="seeking" v-if="video.seeking"></div>
 			<div class="errored" v-if="video.error">
 				<div class="errmsg">
-					<div class="hidebtn" @click.stop="video.error = null">
+					<div
+						class="hidebtn"
+						v-if="!unsupport"
+						@click.stop="video.error = null"
+					>
 						+
 					</div>
 					<p v-if="unsupport">此浏览器不支持,请更换浏览器</p>
@@ -557,6 +561,12 @@ const tickEnd = debounce((self) => {
 	}
 }, 900);
 
+const modern =
+	window.Promise &&
+	window.ReadableStream &&
+	window.fetch &&
+	window.ArrayBuffer;
+
 export default {
 	props: {
 		playerInfo: {
@@ -607,7 +617,7 @@ export default {
 				currentTime: 0,
 				played: 0,
 				seeking: false,
-				error: "",
+				error: !modern,
 				playbackRate: sessionStorage.getItem("playbackRate") || 1,
 				cycle: sessionStorage.getItem("cycle") || 0,
 			},
@@ -724,6 +734,9 @@ export default {
 			return r.reverse();
 		},
 		unsupport() {
+			if (!modern) {
+				return true;
+			}
 			const v = this.video.error;
 			if (!v) {
 				return false;
@@ -743,7 +756,6 @@ export default {
 		);
 	},
 	mounted() {
-		this.init();
 		this.delay = new delayer(
 			() => {
 				if (!this.audio) {
@@ -755,6 +767,10 @@ export default {
 			},
 			2000
 		);
+		if (!modern) {
+			return;
+		}
+		this.init();
 	},
 	beforeDestroy() {
 		this.taskQueue.clear();
@@ -965,14 +981,15 @@ export default {
 			return time;
 		},
 		seek(n) {
-			const t = this.$refs.video.duration;
-			if (!t || !isFinite(t)) {
+			const v = this.$refs.video;
+			const t = v.duration;
+			if (!v || !t || !isFinite(t)) {
 				return;
 			}
-			const s = this.$refs.video.currentTime + n;
+			const s = v.currentTime + n;
 			if (s > 0 && s < t) {
 				this.video.currentTime = s;
-				this.$refs.video.currentTime = s;
+				v.currentTime = s;
 				this.loader.seekTo(s);
 			}
 			this.delay.reset();
@@ -1026,7 +1043,11 @@ export default {
 			}
 		},
 		togglePlay() {
-			if (this.$refs.video.paused) {
+			const v = this.$refs.video;
+			if (!v) {
+				return;
+			}
+			if (v.paused) {
 				this.playVideo();
 			} else {
 				this.pauseVideo();
@@ -1038,25 +1059,26 @@ export default {
 			}
 		},
 		pauseVideo() {
-			this.$refs.video.pause();
+			this.$refs.video && this.$refs.video.pause();
 		},
 		playVideo() {
-			this.$refs.video
-				.play()
-				.then(() => {
-					this.clickplay = false;
-				})
-				.catch((err) => {
-					this.clickplay = true;
-					console.info(err);
-				});
+			this.$refs.video &&
+				this.$refs.video
+					.play()
+					.then(() => {
+						this.clickplay = false;
+					})
+					.catch((err) => {
+						this.clickplay = true;
+						console.info(err);
+					});
 		},
 		muteoff() {
-			this.$refs.video.muted = false;
+			if (this.$refs.video) this.$refs.video.muted = false;
 			this.muted = false;
 		},
 		muteon() {
-			this.$refs.video.muted = true;
+			if (this.$refs.video) this.$refs.video.muted = true;
 			this.muted = true;
 		},
 		async toFull() {
@@ -1117,10 +1139,14 @@ export default {
 			});
 		},
 		setVol(n) {
+			const v = this.$refs.video;
+			if (!v) {
+				return;
+			}
 			this.vol.v = n;
-			this.$refs.video.volume = Math.min(1, n / 60);
+			v.volume = Math.min(1, n / 60);
 			this.muted = !n;
-			this.$refs.video.muted = this.muted;
+			v.muted = this.muted;
 		},
 		maskMouseEnter() {
 			this.delay.reset();
@@ -1185,7 +1211,7 @@ export default {
 				return;
 			}
 			const v = this.$refs.video;
-			if (!v.videoWidth || !v.videoHeight) {
+			if (!v || !v.videoWidth || !v.videoHeight) {
 				return;
 			}
 			const canvas = document.createElement("canvas");
