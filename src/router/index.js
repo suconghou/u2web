@@ -17,32 +17,32 @@ const routes = [
 	{
 		path: '/video/:id',
 		name: 'video',
-		component: () => import(/* webpackChunkName: "video" */ '../views/Video.vue')
+		component: () => import(/* webpackChunkName: "page" */ '../views/Video.vue')
 	},
 	{
 		path: '/channel/:id',
 		name: 'channel',
-		component: () => import(/* webpackChunkName: "channel" */ '../views/Channel.vue'),
+		component: () => import(/* webpackChunkName: "page" */ '../views/Channel.vue'),
 		children: [
 			{
 				path: 'uploads',
 				name: 'channel.uploads',
-				component: () => import(/* webpackChunkName: "channel" */ '../views/channel/Uploads.vue'),
+				component: () => import(/* webpackChunkName: "page" */ '../views/channel/Uploads.vue'),
 			},
 			{
 				path: 'favorites',
 				name: 'channel.fav',
-				component: () => import(/* webpackChunkName: "channel" */ '../views/channel/Favorites.vue'),
+				component: () => import(/* webpackChunkName: "page" */ '../views/channel/Favorites.vue'),
 			},
 			{
 				path: 'playlist',
 				name: 'channel.list',
-				component: () => import(/* webpackChunkName: "channel" */ '../views/channel/Playlist.vue'),
+				component: () => import(/* webpackChunkName: "page" */ '../views/channel/Playlist.vue'),
 				children: [
 					{
 						path: ':listId',
 						name: 'channel.list.items',
-						component: () => import(/* webpackChunkName: "channel" */ '../views/channel/PlaylistItems.vue'),
+						component: () => import(/* webpackChunkName: "page" */ '../views/channel/PlaylistItems.vue'),
 					}
 				]
 			}
