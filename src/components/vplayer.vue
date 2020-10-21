@@ -49,11 +49,7 @@
 				</svg>
 			</div>
 
-			<div
-				class="poster"
-				v-if="!video.duration || audio"
-				:style="poster"
-			></div>
+			<div class="poster" v-if="audio" :style="poster"></div>
 			<div
 				class="bottom"
 				:class="{ hide: bottomHide }"
@@ -82,7 +78,7 @@
 					</div>
 				</div>
 				<div class="btns">
-					<div class="play-pause">
+					<div v-if="video.duration" class="play-pause">
 						<svg
 							v-if="paused"
 							@click.stop.prevent="playVideo"
@@ -117,6 +113,7 @@
 							/>
 						</svg>
 					</div>
+					<div v-else class="starting"></div>
 					<div class="time-duration">
 						<span class="curr">{{
 							video.currentTime | timeformat
@@ -616,7 +613,7 @@ export default {
 				duration: 0,
 				currentTime: 0,
 				played: 0,
-				seeking: false,
+				seeking: true,
 				error: !modern,
 				playbackRate: sessionStorage.getItem("playbackRate") || 1,
 				cycle: sessionStorage.getItem("cycle") || 0,
@@ -816,6 +813,12 @@ export default {
 						return;
 					}
 					const v = this.$refs.video;
+					v.addEventListener("waiting", () => {
+						this.video.seeking = true;
+					});
+					v.addEventListener("playing", () => {
+						this.video.seeking = false;
+					});
 					v.addEventListener("seeking", () => {
 						this.video.seeking = true;
 					});
@@ -846,6 +849,7 @@ export default {
 						this.onPlayEnd();
 					});
 					v.addEventListener("loadedmetadata", () => {
+						this.video.seeking = false;
 						this.playSpeed();
 						if (this.autoplay) {
 							v.play()
@@ -856,6 +860,8 @@ export default {
 									this.clickplay = true;
 									console.info(err);
 								});
+						} else {
+							this.clickplay = true;
 						}
 					});
 					v.addEventListener("canplay", () => {
@@ -958,8 +964,8 @@ export default {
 				duration: 0,
 				currentTime: 0,
 				played: 0,
-				seeking: false,
-				error: "",
+				seeking: true,
+				error: !modern,
 				playbackRate: sessionStorage.getItem("playbackRate") || 1,
 				cycle: sessionStorage.getItem("cycle") || 0,
 			};
@@ -1038,6 +1044,10 @@ export default {
 			this.tiptime.left = `${left}px`;
 		},
 		togglePlayOnClick() {
+			const v = this.$refs.video;
+			if (!v || v.readyState <= 1) {
+				return;
+			}
 			if (!this.audio) {
 				this.togglePlay();
 			}
@@ -1389,6 +1399,9 @@ export default {
 				height: 100px;
 				background-size: cover;
 			}
+			.starting{
+				height: 26px;
+			}
 		}
 	}
 	&.full {
@@ -1584,6 +1597,15 @@ export default {
 					}
 				}
 			}
+		}
+		.starting {
+			width: 20px;
+			float: left;
+			margin-left: 15px;
+			height: 36px;
+			background: url("https://assets.suconghou.cn/load.gif") no-repeat
+				center;
+			background-size: contain;
 		}
 		.time-duration {
 			pointer-events: none;

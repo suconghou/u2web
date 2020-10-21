@@ -189,6 +189,7 @@ export default {
 			try {
 				this.loading = true;
 				this.error = "";
+				this.getPlayer(id);
 				const { ok, data } = await videoInfo(id);
 				this.loading = false;
 				if (!ok) {
@@ -200,17 +201,21 @@ export default {
 					return;
 				}
 				document.title = this.info.snippet.title;
-				await this.getPlayer(id);
 			} catch (e) {
-				this.$toast.error(e.message||e.toString());
+				this.$toast.error(e.message || e.toString());
 			}
 		},
 		async getPlayer(id) {
-			const { ok, data } = await playerInfo(id);
-			if (!ok) {
-				return;
+			try {
+				this.playerInfo = {};
+				const { ok, data } = await playerInfo(id);
+				if (!ok) {
+					return;
+				}
+				this.playerInfo = data;
+			} catch (e) {
+				this.$toast.error(e.message || e.toString());
 			}
-			this.playerInfo = data;
 		},
 		async getList(id) {
 			const { ok, data } = await playlistItems(id);

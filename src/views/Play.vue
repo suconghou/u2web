@@ -18,7 +18,9 @@
 				v-show="showlist"
 			/>
 		</template>
-		<div v-else :style="poster"></div>
+		<div v-else :style="poster">
+			<img src="https://assets.suconghou.cn/load.gif" class="v-loading">
+		</div>
 	</div>
 </template>
 
@@ -66,7 +68,10 @@ export default {
 	computed: {
 		poster() {
 			return {
-				backgroundImage: `url("${imgSrc(this.v)}")`,
+				background: `url("${imgSrc(this.v)}") no-repeat center`,
+				position:'relative',
+				"padding-bottom": "inherit",
+				"background-size": "contain",
 			};
 		},
 		style() {
@@ -96,11 +101,16 @@ export default {
 	},
 	methods: {
 		async init(v) {
-			const { ok, data } = await playerInfo(v);
-			if (!ok) {
-				return;
+			try {
+				this.playerInfo = {};
+				const { ok, data } = await playerInfo(v);
+				if (!ok) {
+					return;
+				}
+				this.playerInfo = data;
+			} catch (e) {
+				this.$toast.error(e.message || e.toString());
 			}
-			this.playerInfo = data;
 		},
 		playList() {
 			this.showlist = !this.showlist;
@@ -116,4 +126,14 @@ export default {
 </script>
 
 <style>
+.v-loading {
+	display: block;
+    position: absolute;
+    width: 40px;
+    top: 50%;
+    height: 40px;
+    left: 50%;
+    margin-left: -20px;
+    margin-top: -20px;
+}
 </style>
