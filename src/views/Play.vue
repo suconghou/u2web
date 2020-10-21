@@ -19,7 +19,7 @@
 			/>
 		</template>
 		<div v-else :style="poster">
-			<img src="https://assets.suconghou.cn/load.gif" class="v-loading">
+			<img src="https://assets.suconghou.cn/load.gif" class="v-loading" />
 		</div>
 	</div>
 </template>
@@ -69,7 +69,7 @@ export default {
 		poster() {
 			return {
 				background: `url("${imgSrc(this.v)}") no-repeat center`,
-				position:'relative',
+				position: "relative",
 				"padding-bottom": "inherit",
 				"background-size": "contain",
 			};
@@ -128,12 +128,12 @@ export default {
 <style>
 .v-loading {
 	display: block;
-    position: absolute;
-    width: 40px;
-    top: 50%;
-    height: 40px;
-    left: 50%;
-    margin-left: -20px;
-    margin-top: -20px;
+	position: absolute;
+	width: 40px;
+	top: 50%;
+	height: 40px;
+	left: 50%;
+	margin-left: -20px;
+	margin-top: -20px;
 }
 </style>

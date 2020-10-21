@@ -1280,6 +1280,7 @@ export default {
 	font-size: 14px;
 	background: #282828;
 	outline: none;
+	line-height: 1;
 	&.fullscreen {
 		padding: 0;
 		height: 100%;
