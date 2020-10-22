@@ -1,6 +1,9 @@
 <template>
 	<div :style="style">
-		<template v-if="playerInfo.id">
+		<div class="video-error" v-if="error">
+			{{ error }}
+		</div>
+		<template v-else-if="playerInfo.id">
 			<vplayer
 				@list="playList"
 				@ended="playNext"
@@ -85,7 +88,12 @@ export default {
 				width: "100%",
 				height: "0",
 				"padding-bottom": "56.25%",
+				position: 'relative',
+
 			};
+		},
+		error() {
+			return this.playerInfo.error || this.playerInfo.msg;
 		},
 	},
 	data() {
@@ -135,5 +143,16 @@ export default {
 	left: 50%;
 	margin-left: -20px;
 	margin-top: -20px;
+}
+.video-error {
+	position: absolute;
+    top: 50%;
+    text-align: center;
+    z-index: 99;
+    left: 50%;
+    transform: translate(-50%, -50%);
+	color: #f11;
+	min-width: 50%;
+    max-width: 80%;
 }
 </style>

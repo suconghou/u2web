@@ -4,7 +4,9 @@
 		<mu-row v-else>
 			<mu-col lg="8" xl="8" md="7" sm="12" span="12">
 				<div class="v-error vplayer-wrapper" v-if="error">
+					<div class="err-msg">
 					{{ error }}
+					</div>
 				</div>
 				<template v-else>
 					<div class="m-title">{{ v.title }}</div>
@@ -285,7 +287,13 @@ export default {
 		align-items: center;
 		background: #eee;
 		font-size: 20px;
-		margin-top: 70px;
+		position: relative;
+		.err-msg{
+			position: absolute;
+			left: 50%;
+			top:50%;
+			transform: translate(-50%,-50%);
+		}
 	}
 	.vplayer-wrapper {
 		height: 0;
