@@ -299,7 +299,7 @@
 											:key="index"
 											@click="playSpeed(item)"
 										>
-											{{ item }}倍
+											{{ item }}x
 										</li>
 									</ul>
 								</li>
@@ -1077,6 +1077,7 @@ export default {
 					.play()
 					.then(() => {
 						this.clickplay = false;
+						this.delay.start()
 					})
 					.catch((err) => {
 						this.clickplay = true;
@@ -1161,11 +1162,11 @@ export default {
 		maskMouseEnter() {
 			this.delay.reset();
 			requestAnimationFrame(() => {
-				this.$el.focus();
+				this.$el.focus({preventScroll:true});
 			});
 		},
 		maskMouseLeave() {
-			this.delay.do();
+			
 		},
 		maskMouseMove() {
 			this.delay.reset();
@@ -1304,17 +1305,6 @@ export default {
 					width: 6px;
 					height: 6px;
 					top: -2px;
-				}
-				&:hover {
-					.progress-line,
-					.loaded,
-					.played {
-						height: 2px;
-					}
-					.dot {
-						width: 6px;
-						height: 6px;
-					}
 				}
 				.progress-line {
 					.times {
@@ -1521,17 +1511,6 @@ export default {
 			&.hide {
 				visibility: hidden;
 				opacity: 0;
-			}
-			&:hover {
-				.progress-line,
-				.loaded,
-				.played {
-					height: 5px;
-				}
-				.dot {
-					width: 11px;
-					height: 11px;
-				}
 			}
 		}
 		.progress-bar {
@@ -1795,7 +1774,7 @@ export default {
 			}
 			.qitem-list {
 				position: absolute;
-				bottom: 18px;
+				bottom: 17px;
 				padding: 0 0 18px 0;
 				margin: 0;
 				display: none;
@@ -1856,9 +1835,8 @@ export default {
 				bottom: 24px;
 				color: #fff;
 				width: 76px;
-				text-align: left;
-				text-indent: 10px;
-				padding-bottom: 10px;
+				text-align: center;
+				padding-bottom: 9px;
 				left: -4px;
 				display: none;
 			}
@@ -1883,6 +1861,7 @@ export default {
 					list-style: none;
 					padding: 4px 0;
 					display: block;
+					text-align: center;
 				}
 				li:hover {
 					background: #111;
