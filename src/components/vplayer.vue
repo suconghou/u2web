@@ -817,6 +817,7 @@ export default {
 						this.video.seeking = true;
 					});
 					v.addEventListener("playing", () => {
+						this.delay.start()
 						this.video.seeking = false;
 					});
 					v.addEventListener("seeking", () => {
@@ -1077,7 +1078,6 @@ export default {
 					.play()
 					.then(() => {
 						this.clickplay = false;
-						this.delay.start()
 					})
 					.catch((err) => {
 						this.clickplay = true;

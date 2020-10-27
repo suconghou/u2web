@@ -21,7 +21,6 @@
 							@loadersready="onLoadersready"
 							v-if="playerInfo.id"
 							:player-info="playerInfo"
-							:v="playerInfo.id"
 						/>
 					</div>
 					<div class="channel" @click="toChannel">
@@ -173,6 +172,7 @@ export default {
 		},
 	},
 	beforeRouteLeave(to, from, next) {
+		this.playerInfo = {};
 		if (this.$refs.player) {
 			this.$refs.player.$destroy();
 		}
