@@ -1824,6 +1824,7 @@ export default {
 			text-align: right;
 			color: #ddd;
 			line-height: 20px;
+			height:24px;
 			box-sizing: content-box;
 			top: 7px;
 			position: relative;
@@ -1847,7 +1848,7 @@ export default {
 				color: #fff;
 				width: 76px;
 				text-align: center;
-				padding-bottom: 9px;
+				padding-bottom: 6px;
 				left: -4px;
 				display: none;
 			}
