@@ -817,7 +817,7 @@ export default {
 						this.video.seeking = true;
 					});
 					v.addEventListener("playing", () => {
-						this.delay.start()
+						this.delay.start();
 						this.video.seeking = false;
 					});
 					v.addEventListener("seeking", () => {
@@ -1094,7 +1094,19 @@ export default {
 		},
 		async toFull() {
 			try {
-				const el = this.$el;
+				let el = this.$el;
+				// PC端,MiuiBrowser,使用el全屏
+				// 微信端,UC浏览器等使用video全屏
+				// 即 非PC,非MiuiBrowser,则用video
+				if (
+					/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) &&
+					!/MiuiBrowser/i.test(navigator.userAgent)
+				) {
+					el = this.$refs.video;
+				}
+				if (!el) {
+					return;
+				}
 				const rfs =
 					el.requestFullScreen ||
 					el.webkitRequestFullScreen ||
@@ -1111,6 +1123,7 @@ export default {
 				const el = document;
 				const cfs =
 					el.cancelFullScreen ||
+					el.msExitFullscreen ||
 					el.webkitCancelFullScreen ||
 					el.mozCancelFullScreen ||
 					el.exitFullScreen;
@@ -1162,12 +1175,10 @@ export default {
 		maskMouseEnter() {
 			this.delay.reset();
 			requestAnimationFrame(() => {
-				this.$el.focus({preventScroll:true});
+				this.$el.focus({ preventScroll: true });
 			});
 		},
-		maskMouseLeave() {
-			
-		},
+		maskMouseLeave() {},
 		maskMouseMove() {
 			this.delay.reset();
 			this.delay.delay();
@@ -1390,7 +1401,7 @@ export default {
 				height: 100px;
 				background-size: cover;
 			}
-			.starting{
+			.starting {
 				height: 26px;
 			}
 		}
