@@ -139,6 +139,79 @@ screenshot: {
 
 `safari`不支持对`mse`的视频截图,已对其屏蔽,见`https://github.com/video-dev/hls.js/issues/1806`
 
+## embed video
+
+click `嵌入视频` below the video player , It shows you how to embed iframe or component
+
+when use `web component`, it needs some dependencies `vue` `axios` `fastloadjs` `u2-player`
+
+a simple example 
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* only for css reset */
+        html{width:100%;height:100%;font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}body{margin:0;width:100%;height:100%;}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}
+        input,button,select,textarea{outline:none}textarea{resize:none}a{text-decoration:none;color:#000}ul{padding-left:0;list-style:none;}
+        /* css reset end */
+        .wrapper {
+            width: 70%;
+            margin: 10px auto;
+            background: #faa;
+        }
+        .player-box {
+            height: 0;
+            padding-bottom: 59%;
+            /* 最小56.25%, 稍微加大可留一些间距,看灰色底  */
+            background: #aaa; /* this is only for debug view  */
+        }
+        .unsupport {
+            text-align: center;
+            padding-top: 100px;
+            font-size: 16px;
+            color: #f11;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // please set localStorage to use your own worker or videoproxy
+        // localStorage.setItem("baseurl","https://your_worker_or_videoproxy_domain/video");
+    </script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/vue@2.6.11/dist/vue.min.js,npm/axios@0.19.2/dist/axios.min.js,gh/suconghou/assets@6a45e4d/fastload.min.js,gh/suconghou/assets@6a45e4d/u2-player.min.js"></script>
+    <div class="wrapper">
+        <div class="player-box">
+            <u2-player autoplay="true" nop2p="true" screenshot="true" v="9-4aWqk7b0k" id="video"></u2-player>
+        </div>
+    </div>
+    <script>
+        // optional , give message if browser too low
+        var modern = window.Promise &&
+            window.ReadableStream &&
+            window.fetch &&
+            window.ArrayBuffer;
+        if (!modern) {
+            var el = document.getElementsByClassName('player-box')
+            if (el && el.length) {
+                el[0].innerHTML = '<div class="unsupport">此浏览器不支持,请更换浏览器</div>'
+            }
+        }
+    </script>
+</body>
+</html>
+```
+
+**notice**
+
+you should change `service/index.js` and `yarn buildwc` to use your own worker or videoproxy backend
+
+or set localStorage on your website
+
+
 本项目仅作为学习使用,切勿用作其他用途
 
 更多说明可参考

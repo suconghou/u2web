@@ -4,10 +4,8 @@ Vue.use(Toast);
 import axios from 'axios'
 
 // 编译为组件时 videoBaseURL 必须为https绝对地址
-const abs = 'https://stream.pull.workers.dev/video' // "https://video.feds.club/video"
-let vBaseURL = localStorage.getItem("baseurl") || abs || '/video';
-
-vBaseURL = vBaseURL.split(';').map(v => {
+const abs = 'https://stream.pull.workers.dev/video;https://video.feds.club/video'
+let vBaseURL = (localStorage.getItem("baseurl") || abs).split(';').map(v => {
     if (!v || v.substr(0, 4).toLowerCase() == 'http') {
         return v
     }
@@ -15,7 +13,7 @@ vBaseURL = vBaseURL.split(';').map(v => {
 }).filter(v => v).join(';')
 
 export const videoBaseURL = vBaseURL
-const apiBaseURL = localStorage.getItem("apibaseurl") || 'https://r.suconghou.cn/video/api/v3' || '/video/api/v3';
+const apiBaseURL = localStorage.getItem("apibaseurl") || 'https://r.suconghou.cn/video/api/v3';
 
 export const defaultImg = 'https://assets.suconghou.cn/defaultImg.png'
 
