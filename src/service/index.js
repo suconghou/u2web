@@ -81,6 +81,10 @@ export const playerInfo = async (id) => {
             const baseURL = urls[i]
             const res = await player.get(`/${id}.json`, { baseURL })
             if (res.ok) {
+                if (i < urls.length - 1 && (res.data.error || !Object.keys(res.data.streams).length)) {
+                    // 如果还有备用镜像,并且当前取到的结果不正确,则尝试下一个
+                    continue
+                }
                 return res
             }
         } catch (e) {
