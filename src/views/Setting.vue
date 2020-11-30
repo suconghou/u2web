@@ -2,15 +2,29 @@
 	<div class="wrap-inner">
 		<mu-container>
 			<mu-card>
-				<mu-form :model="form" class="mu-set-form" label-position="left" label-width="120">
+				<mu-form
+					:model="form"
+					class="mu-set-form"
+					label-position="left"
+					label-width="120"
+				>
 					<mu-form-item prop="input" label="内容API服务">
-						<mu-text-field v-model="form.apiPath" placeholder="留空使用默认值"></mu-text-field>
+						<mu-text-field
+							v-model="form.apiPath"
+							placeholder="留空使用默认值"
+						></mu-text-field>
 					</mu-form-item>
 					<mu-form-item prop="input" label="视频解析服务">
-						<mu-text-field v-model="form.videoCdn" placeholder="留空使用默认值,多个使用;隔开"></mu-text-field>
+						<mu-text-field
+							v-model="form.videoCdn"
+							placeholder="留空使用默认值,多个使用;隔开"
+						></mu-text-field>
 					</mu-form-item>
 					<mu-form-item prop="input" label="信令服务器">
-						<mu-text-field v-model="form.wsPrefix" placeholder="留空使用默认值"></mu-text-field>
+						<mu-text-field
+							v-model="form.wsPrefix"
+							placeholder="留空使用默认值"
+						></mu-text-field>
 					</mu-form-item>
 					<mu-button color="primary" @click="save">保存</mu-button>
 					<mu-alert
@@ -20,7 +34,8 @@
 						delete
 						v-if="saved"
 						transition="mu-scale-transition"
-					>保存成功,刷新后生效!</mu-alert>
+						>保存成功,刷新后生效!</mu-alert
+					>
 				</mu-form>
 			</mu-card>
 		</mu-container>
@@ -36,7 +51,7 @@ export default {
 				videoCdn: localStorage.getItem("baseurl") || "",
 				wsPrefix: localStorage.getItem("ws") || "",
 			},
-			saved: false
+			saved: false,
 		};
 	},
 	methods: {
@@ -57,8 +72,11 @@ export default {
 				localStorage.removeItem("ws");
 			}
 			this.saved = true;
-		}
-	}
+			setTimeout(() => {
+				location.reload();
+			}, 2e3);
+		},
+	},
 };
 </script>
 
