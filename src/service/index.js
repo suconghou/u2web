@@ -87,6 +87,10 @@ export const playerInfo = async (id) => {
                 }
                 return res
             }
+            // 如果失败,500,没有尝试机会了,就return
+            if (i >= urls.length - 1) {
+                return res
+            }
         } catch (e) {
             if (i >= urls.length - 1) {
                 throw e

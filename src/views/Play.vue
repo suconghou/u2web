@@ -88,8 +88,7 @@ export default {
 				width: "100%",
 				height: "0",
 				"padding-bottom": "56.25%",
-				position: 'relative',
-
+				position: "relative",
 			};
 		},
 		error() {
@@ -113,6 +112,7 @@ export default {
 				this.playerInfo = {};
 				const { ok, data } = await playerInfo(v);
 				if (!ok) {
+					this.error = data.msg || data;
 					return;
 				}
 				this.playerInfo = data;
@@ -146,13 +146,13 @@ export default {
 }
 .video-error {
 	position: absolute;
-    top: 50%;
-    text-align: center;
-    z-index: 99;
-    left: 50%;
-    transform: translate(-50%, -50%);
+	top: 50%;
+	text-align: center;
+	z-index: 99;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	color: #f11;
 	min-width: 50%;
-    max-width: 80%;
+	max-width: 80%;
 }
 </style>

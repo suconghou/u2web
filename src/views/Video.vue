@@ -5,14 +5,16 @@
 			<mu-col lg="8" xl="8" md="7" sm="12" span="12">
 				<div class="v-error vplayer-wrapper" v-if="error">
 					<div class="err-msg">
-					{{ error }}
+						{{ error }}
 					</div>
 				</div>
 				<template v-else>
 					<div class="m-title">{{ v.title }}</div>
 					<div
 						class="vplayer-wrapper"
-						:class="{ loading: !playerInfo.id }"
+						:class="{
+							loading: !playerInfo.id && !playerInfo.error,
+						}"
 					>
 						<vplayer
 							ref="player"
@@ -22,6 +24,12 @@
 							v-if="playerInfo.id"
 							:player-info="playerInfo"
 						/>
+						<div
+							class="player-err-msg"
+							v-else-if="playerInfo.error"
+						>
+							{{ playerInfo.error }}
+						</div>
 					</div>
 					<div class="channel" @click="toChannel">
 						{{ v.channelTitle }}
@@ -212,6 +220,7 @@ export default {
 				this.playerInfo = {};
 				const { ok, data } = await playerInfo(id);
 				if (!ok) {
+					this.playerInfo = { error: data.msg || data };
 					return;
 				}
 				this.playerInfo = data;
@@ -288,12 +297,17 @@ export default {
 		background: #eee;
 		font-size: 20px;
 		position: relative;
-		.err-msg{
+		.err-msg {
 			position: absolute;
 			left: 50%;
-			top:50%;
-			transform: translate(-50%,-50%);
+			top: 50%;
+			transform: translate(-50%, -50%);
 		}
+	}
+	.player-err-msg {
+		text-align: center;
+		font-size: 20px;
+		color: #f22;
 	}
 	.vplayer-wrapper {
 		height: 0;
