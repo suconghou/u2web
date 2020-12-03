@@ -308,6 +308,7 @@ export default {
 		text-align: center;
 		font-size: 20px;
 		color: #f22;
+		padding-top: 26%;
 	}
 	.vplayer-wrapper {
 		height: 0;
