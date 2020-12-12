@@ -74,7 +74,7 @@ export default {
 			this.saved = true;
 			setTimeout(() => {
 				location.reload();
-			}, 2e3);
+			}, 1e3);
 		},
 	},
 };

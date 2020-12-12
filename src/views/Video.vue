@@ -169,6 +169,9 @@ export default {
 		},
 		items() {
 			return this.listdata.items.filter((v) => {
+				if (!v.snippet) {
+					return false;
+				}
 				if (!v.snippet.resourceId) {
 					return true;
 				}
