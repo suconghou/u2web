@@ -1,6 +1,6 @@
 
 export const webp = (() => document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') == 0)();
-export const webm = MediaSource.isTypeSupported(`video/webm;codecs="vp9"`)
+export const webm = window.MediaSource && MediaSource.isTypeSupported(`video/webm;codecs="vp9"`)
 export const timeBefore = time => {
     time = new Date(time).getTime();
     const dur = (+new Date() - time) / 1000;

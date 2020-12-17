@@ -562,7 +562,8 @@ const modern =
 	window.Promise &&
 	window.ReadableStream &&
 	window.fetch &&
-	window.ArrayBuffer;
+	window.ArrayBuffer &&
+	window.MediaSource;
 
 export default {
 	props: {
@@ -1824,7 +1825,7 @@ export default {
 			text-align: right;
 			color: #ddd;
 			line-height: 20px;
-			height:24px;
+			height: 24px;
 			box-sizing: content-box;
 			top: 7px;
 			position: relative;

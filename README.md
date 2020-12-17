@@ -139,6 +139,13 @@ screenshot: {
 
 `safari`不支持对`mse`的视频截图,已对其屏蔽,见`https://github.com/video-dev/hls.js/issues/1806`
 
+因需要`MSE`的支持,移动端手机`IOS`系统(IOS13,14等)均不支持,`iPadOS 13+`支持
+>
+> https://stackoverflow.com/questions/52999825/why-exactly-doesnt-html5-media-source-video-work-on-ios
+
+安卓微信支持,UC浏览器支持,手机QQ浏览器不支持.
+
+
 ## embed video
 
 click `嵌入视频` below the video player , It shows you how to embed iframe or component
@@ -193,7 +200,9 @@ a simple example
         var modern = window.Promise &&
             window.ReadableStream &&
             window.fetch &&
-            window.ArrayBuffer;
+            window.ArrayBuffer &&
+            window.MediaSource;
+
         if (!modern) {
             var el = document.getElementsByClassName('player-box')
             if (el && el.length) {

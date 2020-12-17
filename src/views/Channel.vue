@@ -5,7 +5,7 @@
 				<div class="title">{{title}}</div>
 				<div class="pubdate">创建于{{pubdate}}</div>
 
-				<mu-badge class="subcount" :content="subscriberCount" color="secondary"></mu-badge>
+				<mu-badge v-if="!res.statistics.hiddenSubscriberCount" class="subcount" :content="subscriberCount" color="secondary"></mu-badge>
 				<mu-badge class="viewcount" :content="viewcount" color="primary"></mu-badge>
 				<mu-badge class="videocount" :content="videocount" color="success"></mu-badge>
 
