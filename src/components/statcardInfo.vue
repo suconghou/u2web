@@ -254,16 +254,16 @@ export default {
 			margin-right: 20px;
 		}
 		&.open {
-			background: #8f8;
+			background: #8f8 !important;
 		}
 		&.connecting {
 			background: #fff4a9;
 		}
 		&.closing {
-			background: #fbe1e4;
+			background: #e2aab0;
 		}
 		&.closed {
-			background: #f7c6cc;
+			background: #e96675;
 		}
 		&[cstate=failed],&[istate=failed]{
 			background: #ff4a64;
