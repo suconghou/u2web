@@ -312,6 +312,9 @@ export default {
 			&.rtc {
 				background: #e50bff;
 			}
+			&.p10:not(.rtc){
+				background: #0d0;
+			}
 		}
 		&:hover {
 			border-color: #888;

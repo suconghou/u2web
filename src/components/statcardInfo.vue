@@ -21,6 +21,10 @@
 				<span class="box error"></span>
 				<span>HTTP错误</span>
 			</div>
+			<div class="label">
+				<span class="box done p10"></span>
+				<span>HTTP和RTC同时下载,但HTTP先完成</span>
+			</div>
 		</div>
 		<div class="rtc-stat">
 			<div class="m-info">
@@ -214,6 +218,9 @@ export default {
 					background: #070;
 					&.rtc {
 						background: #e50bff;
+					}
+					&.p10:not(.rtc){
+						background: #0d0;
 					}
 				}
 			}
