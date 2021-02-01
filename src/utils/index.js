@@ -48,12 +48,10 @@ export const formatDuration = t => {
     if (t == 'P0D') {
         return '直播'
     }
-    const m = t.match(/([1-9]+)M$/)
-    if (m) {
-        return (m[1].length == 1 ? '0' + m[1] : m[1]) + ':00'
-    }
-    const arr = t.match(/[1-9]\d{0,3}/g).map(v => v.length == 1 ? '0' + v : v)
-    return arr.join(':')
+    const m = { 'H': ':00:00', 'M': ':00', 'S': '' };
+    const l = m[t.substr(-1)]
+    const arr = t.match(/[0-9]\d{0,3}/g).map(v => v.length == 1 ? '0' + v : v)
+    return arr.join(':') + l;
 }
 
 export const formatCount = c => {
@@ -79,6 +77,7 @@ export const z = t => {
 };
 
 export const timeDuration = t => {
+    t = Math.round(t)
     const h = Math.floor(t / 3600);
     const m = Math.floor((t - h * 3600) / 60);
     const s = t - h * 3600 - m * 60;
