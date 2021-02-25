@@ -47,6 +47,8 @@
 
 <script>
 var timer,rtc;
+const msgList = [];
+let inited = false;
 import { byteFormat } from "@/utils/index";
 export default {
 	data() {
@@ -54,7 +56,7 @@ export default {
 			id: "",
 			stat: {},
 			text: "",
-			msglist: []
+			msglist: msgList
 		};
 	},
 	computed: {
@@ -73,20 +75,34 @@ export default {
 			timer = setInterval(() => {
 				this.stat = rtc.getStats();
 			}, 1000);
-			rtc.listen("chat", ({ uid, data }) => {
-				this.msglist.push({
-					uid,
-					text: data.text
+			if(!inited){
+				rtc.listen("chat", ({ uid, data }) => {
+					msgList.push({
+						uid,
+						text: data.text
+					});
+					if(document.querySelector('.concat-wrap .msg-list')){
+						// 在当前页面
+						this.render()
+					}else{
+						// 广播事件
+						this.$root.$emit('chat',{uid,data})
+					}
 				});
-				setTimeout(() => this.scroll(), 20);
-			});
-			setTimeout(() => {
-				this.stat = rtc.getStats();
-				this.msglist.push({
-					uid: "机器人",
-					text: "尝试发布一条消息吧"
-				});
-			}, 200);
+				setTimeout(() => {
+					this.stat = rtc.getStats();
+					msgList.push({
+						uid: "机器人",
+						text: "尝试发布一条消息吧"
+					});
+					this.render()
+				}, 200);
+				inited = true
+			}else{
+				// 清除未读标记
+				this.$root.$emit('chat',{uid:'',data:{}})
+				this.render()
+			}
 		},
 		send() {
 			const text = this.text.replace(/^\s+|\s+$/, "");
@@ -100,11 +116,15 @@ export default {
 				}
 			};
 			rtc.broadcast(JSON.stringify(data));
-			this.msglist.push({
+			msgList.push({
 				uid: this.id,
 				text
 			});
 			this.text = "";
+			this.render()
+		},
+		render(){
+			this.msglist = msgList;
 			setTimeout(() => this.scroll(), 20);
 		},
 		scroll() {

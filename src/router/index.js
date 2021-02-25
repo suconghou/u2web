@@ -76,4 +76,10 @@ const router = new VueRouter({
 	routes
 })
 
+router.afterEach((to, from) => {
+	if (window._hmt && typeof window._hmt.push == 'function') {
+		window._hmt.push(['_trackPageview', to.fullPath])
+	}
+});
+
 export default router
