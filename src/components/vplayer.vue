@@ -31,7 +31,7 @@
 					<p v-if="unsupport">此浏览器不支持,请更换浏览器</p>
 					<template v-else>
 						<p>{{ video.error.stack || video.error }}</p>
-						<p v-if="typeof video.error != 'string'">
+						<p v-if="!video.error.length">
 							播放出错,请刷新重试
 						</p>
 					</template>
@@ -1272,7 +1272,6 @@ export default {
 
 <style lang="less">
 .clearfix() {
-	*zoom: 1; // for ie6 ie7
 	&:before,
 	&:after {
 		content: " "; // 1
