@@ -51,6 +51,9 @@ export const httpCreate = (baseURL, timeout = 60e3) => {
 
 
 export const imgSrc = (id) => {
+    if (localStorage.imgServer) {
+        return localStorage.imgServer + `/${id}.jpg`;
+    }
     return videoBaseURL.split(';')[0] + `/${id}.jpg`;
 }
 
