@@ -111,7 +111,7 @@ export default {
 			}
 			if (t === "progress") {
 				const p = Math.ceil(((res.i + 1) / res.n) * 10);
-				s.progress = `p${p} p${res.i + 1}-${res.n}`;
+				s.progress = `rtc-found p${p} p${res.i + 1}-${res.n}`;
 			} else {
 				s.status.push(t);
 			}
@@ -262,7 +262,7 @@ export default {
 			&.http-done {
 				background: #070;
 				opacity: 1;
-				&.rtc-start {
+				&.rtc-found {
 					background: #0d0;
 				}
 			}
