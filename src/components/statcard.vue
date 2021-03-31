@@ -1,23 +1,31 @@
 <template>
 	<div class="stat-card" :class="len">
-		<div class="stat-card-inner" @mouseleave="curr=null">
+		<div class="stat-card-inner" @mouseleave="curr = null">
 			<div
 				class="box"
-				:class="[status[item.no]?status[item.no].status:'',status[item.no]?status[item.no].progress:'']"
-				@mouseenter="curr=item"
-				v-for="(item,index) in segments"
+				:class="[
+					...(status[item.no] ? status[item.no].status : []),
+					status[item.no] ? status[item.no].progress : '',
+				]"
+				@mouseenter="curr = item"
+				v-for="(item, index) in segments"
 				:key="index"
 			></div>
 		</div>
 		<div class="stat-item-view">
 			<div v-show="loadstatus.total">
-				<span>{{loadstatus.loaded | byteFormat}} / {{loadstatus.total | byteFormat}}</span>
-				<span class="save-btn" v-show="loadstatus.done" @click="toSave">保存</span>
+				<span
+					>{{ loadstatus.loaded | byteFormat }} /
+					{{ loadstatus.total | byteFormat }}</span
+				>
+				<span class="save-btn" v-show="loadstatus.done" @click="toSave"
+					>保存</span
+				>
 			</div>
 			<template v-if="citem">
-				<span class="no">文件块序号:{{citem.no}}</span>
-				<span class="size">大小:{{citem.size}}</span>
-				<span class="address">起止:{{citem.m}}-{{citem.n}}</span>
+				<span class="no">文件块序号:{{ citem.no }}</span>
+				<span class="size">大小:{{ citem.size }}</span>
+				<span class="address">起止:{{ citem.m }}-{{ citem.n }}</span>
 			</template>
 		</div>
 	</div>
@@ -32,16 +40,16 @@ export default {
 	props: {
 		segments: {
 			type: Object,
-			required: true
+			required: true,
 		},
 		title: {
 			type: String,
-			required: true
+			required: true,
 		},
 		datas: {
 			type: Array,
-			required: true
-		}
+			required: true,
+		},
 	},
 	computed: {
 		len() {
@@ -61,56 +69,51 @@ export default {
 			const { m, n, no } = this.curr;
 			return {
 				...this.curr,
-				size: n - m
+				size: n - m,
 			};
 		},
 		loadstatus() {
 			let loaded = 0,
 				total = 0;
-			Object.keys(this.segments).forEach(k => {
+			Object.keys(this.segments).forEach((k) => {
 				const item = this.segments[k];
 				const s = this.status[item.no];
 				const z = item.n - item.m;
 				total += z;
-				if (s && s.status.indexOf("done") > -1) {
+				const ss = s ? s.status : [];
+				if (ss.includes("http-done") || ss.includes("rtc-done")) {
 					loaded += z;
 				}
 			});
 			return {
 				done: total == loaded,
 				total,
-				loaded
+				loaded,
 			};
-		}
+		},
 	},
 	data() {
 		return {
 			curr: null,
-			status: {}
+			status: {},
 		};
 	},
 	methods: {
 		statusupdate(t, res) {
-			const s = this.status[res.no];
-			if (t.indexOf("start") > -1) {
-				if (s && s.status.indexOf("done") > -1) {
-					return;
-				}
-				this.$set(this.status, res.no, {
-					status: t,
-					progress: s ? s.progress : ""
-				});
-			} else if (t.indexOf("progress") > -1) {
-				if (s) {
-					const p = Math.ceil(((res.i + 1) / res.n) * 10);
-					s.progress = `p${p} p${res.i + 1}-${res.n}`;
-				}
-			} else {
-				this.$set(this.status, res.no, {
-					status: res.err ? "error" : t,
+			let s = this.status[res.no];
+			if (!s) {
+				s = {
 					item: res,
-					progress: s ? s.progress : ""
-				});
+					status: [],
+					process: "",
+				};
+				this.$set(this.status, res.no, s);
+			}
+			if (t === "progress") {
+				const p = Math.ceil(((res.i + 1) / res.n) * 10);
+				s.progress = `p${p} p${res.i + 1}-${res.n}`;
+			} else {
+				s.status.push(t);
 			}
 		},
 		async toSave() {
@@ -123,13 +126,13 @@ export default {
 				datas.push(res.item.data);
 			}
 			await saveBuffer(datas, name);
-		}
+		},
 	},
 	filters: {
 		byteFormat(n) {
 			return byteFormat(n);
-		}
-	}
+		},
+	},
 };
 </script>
 
@@ -254,17 +257,33 @@ export default {
 		height: 12px;
 		border: 1px solid #fff;
 		background: #eee;
-		&.start {
+		&.http-start {
 			background: #e6af13;
-			&.rtc {
-				background: #0dd6e0;
+			&.http-done {
+				background: #070;
+				opacity: 1;
+				&.rtc-start {
+					background: #0d0;
+				}
 			}
 		}
-		&.rtc {
+		&.rtc-start {
 			opacity: 0.3;
+			background: #0dd6e0;
+			&.rtc-done {
+				background: #e50bff;
+				opacity: 1;
+				&.http-start {
+					background: #fe03bb;
+				}
+			}
 		}
-		&.error {
+		&.http-start.rtc-start:not(.http-done):not(.rtc-done){
+			background: #e6af13;
+		}
+		&.http-error {
 			background: #a00;
+			opacity: 1;
 		}
 		&.p1 {
 			opacity: 0.35;
@@ -305,16 +324,6 @@ export default {
 		&.p10 {
 			opacity: 1;
 			animation: shining10 0.59s 1;
-		}
-		&.done {
-			background: #070;
-			opacity: 1;
-			&.rtc {
-				background: #e50bff;
-			}
-			&.p10:not(.rtc){
-				background: #0d0;
-			}
 		}
 		&:hover {
 			border-color: #888;
