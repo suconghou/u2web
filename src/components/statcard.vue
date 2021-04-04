@@ -278,7 +278,7 @@ export default {
 				}
 			}
 		}
-		&.http-start.rtc-start:not(.http-done):not(.rtc-done){
+		&.http-start.rtc-start:not(.http-done):not(.rtc-done):not(.http-error){
 			background: #e6af13;
 		}
 		&.http-error {
