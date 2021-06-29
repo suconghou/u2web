@@ -19,13 +19,19 @@ export const defaultImg = 'https://assets.suconghou.cn/defaultImg.png'
 
 const errors = (e) => {
     console.error(e)
-    Toast.error(e);
+    Toast.error(e instanceof Error ? (e.message || e.stack || e.toString()) : e);
+    return {}
 }
 
 const filter = (res) => {
     const { status, statusText, data } = res;
     if (status >= 200 && status < 300) {
-        res.ok = true;
+        if (Number.isInteger(data.code) && data.code !== 0) {
+            res.ok = false;
+            errors(data.msg)
+        } else {
+            res.ok = true;
+        }
         return res;
     }
     res.ok = false;
@@ -45,7 +51,7 @@ export const httpCreate = (baseURL, timeout = 60e3) => {
             return true
         },
     });
-    instance.interceptors.response.use(filter);
+    instance.interceptors.response.use(filter, errors);
     return instance;
 };
 
