@@ -4,7 +4,7 @@ Vue.use(Toast);
 import axios from 'axios'
 
 // 编译为组件时 videoBaseURL 必须为https绝对地址
-const abs = 'https://stream.pull.workers.dev/video;https://video.feds.club/video'
+const abs = 'https://stream.pull.workers.dev/video;https://ustream.vercel.app/video'
 let vBaseURL = (localStorage.getItem("baseurl") || abs).split(';').map(v => {
     if (!v || v.substr(0, 4).toLowerCase() == 'http') {
         return v
