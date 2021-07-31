@@ -19,7 +19,7 @@ P2P 分享使用的信令服务器 https://github.com/suconghou/signalserver
 P2P 分享使用的网络库 https://github.com/suconghou/rtc
 
 
-P2P分享当在线客户端播放的是同一资源(Chrome播放的是webm,Firefox播放的是mp4),同一清晰度时才会相互分享.
+P2P分享当在线客户端播放的是同一资源(Chrome,Firefox播放的是webm,Safari播放的是mp4),同一清晰度时才会相互分享.
 
 ## 网站里的设置说明
 
