@@ -189,7 +189,7 @@ a simple example
         // please set localStorage to use your own worker or videoproxy
         // localStorage.setItem("baseurl","https://your_worker_or_videoproxy_domain/video");
     </script>
-    <script src="https://cdn.jsdelivr.net/combine/npm/vue@2.6.11/dist/vue.min.js,npm/axios@0.19.2/dist/axios.min.js,gh/suconghou/assets@7a7a6bd/fastload.min.js,gh/suconghou/assets@7a7a6bd/u2-player.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/combine/npm/vue@2.6.11/dist/vue.min.js,npm/axios@0.19.2/dist/axios.min.js,gh/suconghou/assets@8a64290/fastload.min.js,gh/suconghou/assets@8a64290/u2-player.min.js"></script>
     <div class="wrapper">
         <div class="player-box">
             <u2-player autoplay="true" nop2p="true" screenshot="true" v="9-4aWqk7b0k" id="video"></u2-player>
