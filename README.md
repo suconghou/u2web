@@ -10,7 +10,7 @@
 
 下载引擎/播放引擎 https://github.com/suconghou/fastloadjs
 
-DEMO https://video.feds.club/
+DEMO https://u2web.pages.dev/
 
 ## P2P说明
 
@@ -219,6 +219,16 @@ a simple example
 you should change `service/index.js` and `yarn buildwc` to use your own worker or videoproxy backend
 
 or set localStorage on your website
+
+**build from source**
+
+update `public/index.html`, modify the script `fastload.min.js` to the latest version if you need.
+
+default config is in `src/service/index.js` but can be override by localStorage,
+update it as you need.
+
+`yarn install` and `yarn build` to build website, `yarn buildwc` to build web component
+
 
 
 本项目仅作为学习使用,切勿用作其他用途
