@@ -1,30 +1,30 @@
 {
-  "name": "u2proxy",
-  "version": "0.1.0",
+  "name": "u2web",
+  "version": "0.2.0",
   "private": true,
+  "type": "module",
+  "description": "P2P视频分享 (Vue 3 + TypeScript + Tailwind CSS 4 + Vite 8)",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "buildwc": "vue-cli-service build --target wc-async --name u2-player 'src/views/Play.vue'"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
+    "mock": "node scripts/mock-server.mjs"
   },
   "dependencies": {
-    "axios": "^0.19.2",
-    "muse-ui": "^3.0.2",
-    "muse-ui-toast": "^0.3.0",
-    "vue": "^2.6.11",
-    "vue-router": "^3.1.5"
+    "@lucide/vue": "^1.31.0",
+    "axios": "^1.19.0",
+    "vue": "^3.5.41",
+    "vue-i18n": "^11.4.8",
+    "vue-router": "^5.2.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.8",
-    "@vue/cli-plugin-router": "~4.5.8",
-    "@vue/cli-plugin-vuex": "~4.5.8",
-    "@vue/cli-service": "~4.5.8",
-    "less": "^3.0.4",
-    "less-loader": "^5.0.0",
-    "vue-template-compiler": "^2.6.11"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.2.0",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3",
+    "vite": "^8.2.1",
+    "vue-tsc": "^3.3.9"
+  }
 }
