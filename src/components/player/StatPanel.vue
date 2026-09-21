@@ -54,21 +54,22 @@ function bindLoader(loader: Fastloader | undefined, card: InstanceType<typeof St
     stat.value = (s as Record<string, RtcPeerStat>) ?? {}
     mid.value = String(m ?? '')
   })
-  loader.listen('res.start', (item) => {
+  loader.listen('http.start', (item) => {
     card?.statusupdate('http-start', item as SegmentItem)
   })
-  loader.listen('res.done', (res) => {
+  loader.listen('http.done', (res) => {
     const r = res as SegmentItem & { err?: unknown }
     card?.statusupdate(r.err ? 'http-error' : 'http-done', r)
   })
-  loader.listen('res.rtc.start', (item) => {
+  loader.listen('rtc.start', (item) => {
     card?.statusupdate('rtc-start', item as SegmentItem)
   })
-  loader.listen('res.rtc.done', (res) => {
+  loader.listen('rtc.done', (res) => {
     card?.statusupdate('rtc-done', res as SegmentItem)
   })
-  loader.listen('res.rtc.progress', (res) => {
-    card?.statusupdate('progress', res as SegmentItem)
+  loader.listen('rtc.progress', (res) => {
+    const r = res as { i?: number; n?: number; part?: number }
+    card?.statusupdate('progress', { no: r.part ?? 0, i: r.i, n: r.n } as SegmentItem)
   })
 }
 
