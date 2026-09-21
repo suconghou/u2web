@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { Menu, Home, MessageCircle, Info, Settings, Globe } from '@lucide/vue'
+import { Menu, Home, Info, Settings, Globe } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
-import { chatStore } from '@/stores/chat'
 import { saveLang, type LangCode } from '@/locales'
 import SearchBox from './SearchBox.vue'
 
@@ -15,7 +14,6 @@ const langRef = ref<HTMLElement>()
 
 const links = [
   { to: '/', label: 'header.home', icon: Home },
-  { to: '/chat', label: 'header.chat', icon: MessageCircle },
   { to: '/about', label: 'header.about', icon: Info },
   { to: '/setting', label: 'header.setting', icon: Settings },
 ]
@@ -91,12 +89,6 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointerDo
           class="relative rounded px-3 py-2 text-sm hover:bg-white/10"
         >
           {{ t(l.label) }}
-          <span
-            v-if="l.to === '/chat' && chatStore.unread > 0"
-            class="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px]"
-          >
-            {{ chatStore.unread }}
-          </span>
         </router-link>
       </nav>
     </div>
@@ -125,12 +117,6 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointerDo
           >
             <component :is="l.icon" class="h-4 w-4" />
             {{ t(l.label) }}
-            <span
-              v-if="l.to === '/chat' && chatStore.unread > 0"
-              class="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px]"
-            >
-              {{ chatStore.unread }}
-            </span>
           </button>
         </div>
       </div>

@@ -2,7 +2,6 @@ export default {
   site: { suffix: 'USTREAM - P2Pシェア' },
   header: {
     home: 'ホーム',
-    chat: 'チャット',
     about: '概要',
     setting: '設定',
     menu: 'メニュー',
@@ -113,15 +112,6 @@ export default {
     notFound: 'チャンネルが存在しないか、権限がありません',
   },
   video: { notFound: '動画が見つからないか、権限がありません', parseFailed: '解析失敗', download: 'ダウンロード', noRelated: '関連動画はありません' },
-  chat: {
-    robot: 'ボット',
-    hint: 'メッセージを投稿してみましょう',
-    placeholder: 'メッセージ... (Enter で送信)',
-    send: '送信',
-    sent: '送信 {n}',
-    received: '受信 {n}',
-    noNodes: 'P2P ノードなし (動画を再生すると接続されます)',
-  },
   uploads: { results: '関連コンテンツ {count} 件', placeholder: 'このチャンネル内を検索', clear: '検索をクリア', search: '検索' },
   fav: { results: '関連コンテンツ {count} 件', private: 'このチャンネルに公開お気に入りはありません' },
   playlistItems: { results: '関連コンテンツ {count} 件', listView: 'リスト表示', gridView: 'グリッド表示' },

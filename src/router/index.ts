@@ -31,7 +31,6 @@ const router = createRouter({
     },
     { path: '/search', name: 'search', component: () => import('@/views/SearchView.vue') },
     { path: '/setting', name: 'setting', component: () => import('@/views/SettingView.vue') },
-    { path: '/chat', name: 'chat', component: () => import('@/views/ChatView.vue') },
     { path: '/play', name: 'play', component: () => import('@/views/PlayView.vue') },
     { path: '/:pathMatch(.*)*', name: 'err404', component: () => import('@/views/NotFoundView.vue') },
   ],

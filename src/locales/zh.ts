@@ -2,7 +2,6 @@ export default {
   site: { suffix: 'USTREAM - P2P分享' },
   header: {
     home: '首页',
-    chat: '聊天',
     about: '关于',
     setting: '设置',
     menu: '菜单',
@@ -98,15 +97,6 @@ export default {
     notFound: '频道不存在或无权限',
   },
   video: { notFound: '视频不存在或无权限', parseFailed: '解析失败', download: '下载视频', noRelated: '暂无相关视频' },
-  chat: {
-    robot: '机器人',
-    hint: '尝试发布一条消息吧',
-    placeholder: '说点什么... (Enter 发送)',
-    send: '发送',
-    sent: '发送 {n}',
-    received: '接收 {n}',
-    noNodes: '暂无P2P节点(需先播放视频建立连接)',
-  },
   uploads: { results: '共{count}个相关内容', placeholder: '在此频道内搜索', clear: '清除搜索', search: '搜索' },
   fav: { results: '共{count}个相关内容', private: '该频道未公开收藏列表' },
   playlistItems: { results: '共{count}个相关内容', listView: '列表视图', gridView: '网格视图' },

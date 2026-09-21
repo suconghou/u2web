@@ -2,7 +2,6 @@ export default {
   site: { suffix: 'USTREAM - P2P 공유' },
   header: {
     home: '홈',
-    chat: '채팅',
     about: '소개',
     setting: '설정',
     menu: '메뉴',
@@ -113,15 +112,6 @@ export default {
     notFound: '채널이 없거나 권한이 없습니다',
   },
   video: { notFound: '동영상을 찾을 수 없거나 권한이 없습니다', parseFailed: '파싱 실패', download: '다운로드', noRelated: '관련 동영상 없음' },
-  chat: {
-    robot: '봇',
-    hint: '메시지를 보내 보세요',
-    placeholder: '메시지 입력... (Enter 전송)',
-    send: '전송',
-    sent: '전송 {n}',
-    received: '수신 {n}',
-    noNodes: 'P2P 노드 없음 (동영상을 재생해야 연결됩니다)',
-  },
   uploads: { results: '관련 콘텐츠 {count}개', placeholder: '이 채널에서 검색', clear: '검색 지우기', search: '검색' },
   fav: { results: '관련 콘텐츠 {count}개', private: '이 채널은 공개 즐겨찾기가 없습니다' },
   playlistItems: { results: '관련 콘텐츠 {count}개', listView: '목록 보기', gridView: '그리드 보기' },

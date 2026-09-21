@@ -137,14 +137,6 @@ export interface Fastloader {
   destroy(): void
 }
 
-/** fastloadjs.rtc() 实例(Chat 用) */
-export interface Rtc {
-  id: string
-  getStats(): Record<string, RtcPeerStat>
-  listen(event: 'chat', cb: (msg: { uid: string; data: { text: string } }) => void): void
-  broadcast(data: string): void
-}
-
 export interface FastloaderCtor {
   new (opts: {
     req: string
@@ -154,7 +146,6 @@ export interface FastloaderCtor {
     end: number
     nop2p?: boolean
   }): Fastloader
-  rtc(): Rtc
 }
 
 declare global {

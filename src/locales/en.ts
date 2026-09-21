@@ -2,7 +2,6 @@ export default {
   site: { suffix: 'USTREAM - P2P Sharing' },
   header: {
     home: 'Home',
-    chat: 'Chat',
     about: 'About',
     setting: 'Settings',
     menu: 'Menu',
@@ -122,15 +121,6 @@ export default {
     notFound: 'Channel not found or no permission',
   },
   video: { notFound: 'Video not found or no permission', parseFailed: 'Parse failed', download: 'Download', noRelated: 'No related videos' },
-  chat: {
-    robot: 'Bot',
-    hint: 'Try posting a message',
-    placeholder: 'Say something... (Enter to send)',
-    send: 'Send',
-    sent: 'Sent {n}',
-    received: 'Received {n}',
-    noNodes: 'No P2P peers yet (play a video to connect)',
-  },
   uploads: { results: '{count} related items', placeholder: 'Search in this channel', clear: 'Clear search', search: 'Search' },
   fav: { results: '{count} related items', private: 'This channel has no public favorites' },
   playlistItems: { results: '{count} related items', listView: 'List view', gridView: 'Grid view' },

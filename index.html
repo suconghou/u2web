@@ -9,8 +9,8 @@
   </head>
   <body>
     <!-- fastloadjs: P2P 多源多线程下载/MSE 播放引擎,仅此库以全局方式加载。
-         本地 vendoring 自 https://github.com/suconghou/assets@8a64290 (sha384-5d23f945…d41b),
-         避免第三方 CDN 不可达导致播放器完全不可用;升级时同步替换 public/fastload.min.js -->
+         本地 vendoring 自 https://github.com/suconghou/fastloadjs (构建产物 fastload.min.js,
+         tsc -> rollup UMD -> esbuild 压缩);升级时用新版构建产物覆盖 public/fastload.min.js -->
     <script src="%BASE_URL%fastload.min.js" defer></script>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
