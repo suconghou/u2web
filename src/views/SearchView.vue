@@ -6,6 +6,7 @@ import { ChevronDown } from '@lucide/vue'
 import VideoCard from '@/components/VideoCard.vue'
 import Loading from '@/components/Loading.vue'
 import { search } from '@/service'
+import { videoIdOf } from '@/utils'
 import { toast } from '@/utils/toast'
 import type { ListResponse } from '@/types'
 
@@ -118,7 +119,7 @@ watch([q, page, rcode], () => doSearch())
         </div>
       </div>
       <div class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        <VideoCard v-for="item in result.items" :key="item.etag" :item="item" />
+        <VideoCard v-for="item in result.items" :key="item.etag ?? videoIdOf(item)" :item="item" />
       </div>
       <div class="my-12 flex justify-end gap-3">
         <button

@@ -6,6 +6,7 @@ import VideoCard from '@/components/VideoCard.vue'
 import ListRow from '@/components/ListRow.vue'
 import { List, LayoutGrid } from '@lucide/vue'
 import { playlistItems } from '@/service'
+import { videoIdOf } from '@/utils'
 import type { ListResponse, VideoItem } from '@/types'
 
 const { t } = useI18n()
@@ -71,10 +72,10 @@ watch([playlistId, page], () => void getPlayList(), { immediate: true })
     </div>
 
     <div v-if="listview">
-      <ListRow v-for="item in listdata.items" :key="item.etag" :item="item" :video="true" />
+      <ListRow v-for="item in listdata.items" :key="item.etag ?? videoIdOf(item)" :item="item" :video="true" />
     </div>
     <div v-else class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
-      <VideoCard v-for="item in listdata.items" :key="item.etag" :item="item" />
+      <VideoCard v-for="item in listdata.items" :key="item.etag ?? videoIdOf(item)" :item="item" />
     </div>
 
     <div class="my-10 flex justify-end gap-3">

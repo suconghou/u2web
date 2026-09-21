@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import VideoCard from '@/components/VideoCard.vue'
 import { playlistItems, search } from '@/service'
+import { videoIdOf } from '@/utils'
 import { useI18n } from 'vue-i18n'
 import { Search, X } from '@lucide/vue'
 import type { ListResponse, VideoItem } from '@/types'
@@ -105,7 +106,7 @@ watch(
       </div>
     </div>
     <div class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
-      <VideoCard v-for="item in listdata.items" :key="item.etag" :item="item" />
+      <VideoCard v-for="item in listdata.items" :key="item.etag ?? videoIdOf(item)" :item="item" />
     </div>
     <div class="my-10 flex justify-end gap-3">
       <button

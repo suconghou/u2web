@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { Menu, X, Home, MessageCircle, Info, Settings, Globe } from '@lucide/vue'
+import { Menu, Home, MessageCircle, Info, Settings, Globe } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { chatStore } from '@/stores/chat'
 import { saveLang, type LangCode } from '@/locales'
@@ -135,9 +135,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointerDo
         </div>
       </div>
     </transition>
-    <button v-if="open" class="fixed inset-0 -z-10 cursor-default" :aria-label="t('header.closeMenu')" @click="open = false">
-      <X class="hidden" />
-    </button>
+    <button v-if="open" class="fixed inset-0 -z-10 cursor-default" :aria-label="t('header.closeMenu')" @click="open = false"></button>
   </header>
 </template>
 

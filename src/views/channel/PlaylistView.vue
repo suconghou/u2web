@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ListRow from '@/components/ListRow.vue'
 import { playlistsInChannel } from '@/service'
+import { videoIdOf } from '@/utils'
 import type { ListResponse, VideoItem } from '@/types'
 
 const { t } = useI18n()
@@ -53,7 +54,7 @@ watch(
   <template v-if="isListRoot">
     <div class="mb-3 text-sm text-zinc-500">{{ t('playlistItems.results', { count: listdata.pageInfo?.totalResults ?? 0 }) }}</div>
     <div>
-      <ListRow v-for="item in listdata.items" :key="item.etag" :item="item" />
+      <ListRow v-for="item in listdata.items" :key="item.etag ?? videoIdOf(item)" :item="item" />
     </div>
     <div class="my-10 flex justify-end gap-3">
       <button

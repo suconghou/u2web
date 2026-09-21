@@ -4,14 +4,11 @@ import VideoCard from '@/components/VideoCard.vue'
 import Loading from '@/components/Loading.vue'
 import { mostPopularVideos } from '@/service'
 import { toast } from '@/utils/toast'
+import { videoIdOf } from '@/utils'
 import type { VideoItem } from '@/types'
 
 const items = ref<VideoItem[]>([])
 const loading = ref(true)
-
-function videoKey(item: VideoItem): string {
-  return typeof item.id === 'string' ? item.id : item.id?.videoId ?? ''
-}
 
 onMounted(async () => {
   loading.value = true
@@ -22,7 +19,7 @@ onMounted(async () => {
     for (const { ok, data } of results) {
       if (!ok) continue
       for (const item of data.items) {
-        const key = videoKey(item)
+        const key = videoIdOf(item)
         if (key && !seen.has(key)) {
           seen.add(key)
           merged.push(item)
@@ -41,6 +38,6 @@ onMounted(async () => {
 <template>
   <Loading v-if="loading" />
   <div v-else class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-    <VideoCard v-for="item in items" :key="item.etag ?? (typeof item.id === 'string' ? item.id : item.id?.videoId ?? '')" :item="item" />
+    <VideoCard v-for="item in items" :key="item.etag ?? videoIdOf(item)" :item="item" />
   </div>
 </template>

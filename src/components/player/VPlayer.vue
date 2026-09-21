@@ -753,7 +753,7 @@ onBeforeUnmount(() => {
     :class="[
       webFull ? 'fixed inset-0 z-[9500]' : 'relative',
       audio ? 'min-h-[100px]' : 'aspect-video',
-      !small ? 'h-full' : '',
+      !small || webFull ? 'h-full' : '',
       bottomHide ? 'cursor-none' : '',
     ]"
     tabindex="0"
@@ -849,7 +849,7 @@ onBeforeUnmount(() => {
               <i
                 v-for="(r, i) in bufferedRanges"
                 :key="i"
-                class="absolute inset-y-0 rounded-full bg-white/25"
+                class="absolute inset-y-0 rounded-full bg-white/50"
                 :style="{ left: r.start * 100 + '%', width: (r.end - r.start) * 100 + '%' }"
               ></i>
               <div class="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-400 to-brand-500" :style="playedStyle"></div>
@@ -1081,7 +1081,7 @@ onBeforeUnmount(() => {
     <video
       v-if="v"
       ref="video"
-      class="pointer-events-none absolute inset-0 z-0 h-full w-full"
+      class="pointer-events-none absolute inset-0 z-0 h-full w-full object-contain"
       :poster="posterImg"
       :autoplay="autoplay"
       playsinline

@@ -61,8 +61,8 @@ export const KEY_GROUPS: Record<number, string[][]> = {
   ],
 }
 
-// P2P 优化模式只保留 360P/720P 两组
-const prefer_keys = sessionStorage.normal ? KEY_GROUPS[3] : KEY_GROUPS[2]
+/** level 未知/非法时的默认清晰度分组 */
+const DEFAULT_KEYS = KEY_GROUPS[2]
 
 /** 该 itag 流可播放:有长度且有 init/index range */
 export const canplay = (t?: StreamItem): boolean => {
@@ -90,7 +90,7 @@ export function buildQualityList(
   const r: QualityOption[] = []
   const s = playerInfo.streams
   const videos = webm ? TYPES.webm.video : TYPES.mp4.video
-  const groups = KEY_GROUPS[level] ?? prefer_keys
+  const groups = KEY_GROUPS[level] ?? DEFAULT_KEYS
   for (const groupkeys of groups) {
     for (const q of groupkeys) {
       const itags = videos[q]
@@ -126,10 +126,8 @@ export function format(item: StreamItem, playerInfo: PlayerInfo): LoadItem {
 }
 
 const getvideo = (s: Record<number, StreamItem>, qlist: QualityOption[]): StreamItem | undefined => {
-  for (const q of [...qlist].reverse()) {
-    return s[q.itag]
-  }
-  return undefined
+  const last = qlist.at(-1)
+  return last ? s[last.itag] : undefined
 }
 
 const getaudio = (s: Record<number, StreamItem>, itags: number[]): StreamItem | undefined => {

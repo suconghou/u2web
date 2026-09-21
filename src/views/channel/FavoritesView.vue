@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VideoCard from '@/components/VideoCard.vue'
 import { playlistItems } from '@/service'
+import { videoIdOf } from '@/utils'
 import type { ListResponse, VideoItem } from '@/types'
 
 const { t } = useI18n()
@@ -43,7 +44,7 @@ watch(
     <div class="mb-3 text-sm text-zinc-500">{{ t('fav.results', { count: listdata.pageInfo?.totalResults ?? 0 }) }}</div>
     <div v-if="!playlistId" class="py-10 text-center text-sm text-zinc-400">{{ t('fav.private') }}</div>
     <div v-else class="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
-      <VideoCard v-for="item in listdata.items" :key="item.etag" :item="item" />
+      <VideoCard v-for="item in listdata.items" :key="item.etag ?? videoIdOf(item)" :item="item" />
     </div>
     <div class="my-10 flex justify-end gap-3">
       <button

@@ -7,8 +7,8 @@ import StatPanel from '@/components/player/StatPanel.vue'
 import ListRow from '@/components/ListRow.vue'
 import Loading from '@/components/Loading.vue'
 import { videoInfo, playlistItems, relatedVideo, playerInfo } from '@/service'
-import { downloadUrl } from '@/config'
-import { timeBefore, formatCount, formatDuration } from '@/utils'
+import { downloadUrl, downloadEnabled } from '@/config'
+import { videoIdOf, timeBefore, formatCount, formatDuration } from '@/utils'
 import { toast } from '@/utils/toast'
 import type { Fastloader, ListResponse, LoadItem, PlayerInfo, VideoItem } from '@/types'
 
@@ -204,6 +204,7 @@ onBeforeUnmount(() => {
           <span v-if="duration" class="rounded-full bg-emerald-100 px-2.5 py-1 text-emerald-700">{{ duration }}</span>
           <span v-if="viewcount" class="rounded-full bg-brand-100 px-2.5 py-1 text-brand-700">{{ viewcount }}</span>
           <a
+            v-if="downloadEnabled"
             :href="downloadUrl(id)"
             target="_blank"
             rel="noopener"
@@ -231,7 +232,7 @@ onBeforeUnmount(() => {
 
       <!-- 侧栏:相关视频/播放列表 -->
       <aside class="lg:col-span-1">
-        <ListRow v-for="item in items" :key="item.etag" :item="item" :video="true" :mini="true" />
+        <ListRow v-for="item in items" :key="item.etag ?? videoIdOf(item)" :item="item" :video="true" :mini="true" />
         <div v-if="!items.length" class="py-8 text-center text-sm text-zinc-400">{{ t('video.noRelated') }}</div>
       </aside>
     </div>

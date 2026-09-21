@@ -1,6 +1,11 @@
 import { i18n } from '@/locales'
+import type { VideoItem } from '@/types'
 
 const t = (key: string, params?: Record<string, unknown>) => i18n.global.t(key, params ?? {})
+
+/** 条目的视频 ID:id 为字符串时直接取,否则取嵌套的 videoId */
+export const videoIdOf = (item: VideoItem): string =>
+  typeof item.id === 'string' ? item.id : (item.id?.videoId ?? '')
 
 /** 发布时间: 如 "3年前" / "3y ago" / "3년 전" / "3年前" */
 export const timeBefore = (time?: string): string => {

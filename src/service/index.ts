@@ -68,10 +68,7 @@ const httpCreate = (baseURL: string, timeout = 60e3): AxiosInstance => {
   })
   instance.interceptors.response.use(
     filter as unknown as (res: import('axios').AxiosResponse) => import('axios').AxiosResponse,
-    (e) => {
-      reportError(e)
-      return Promise.reject(e)
-    },
+    (e) => Promise.reject(e),
   )
   return instance
 }
