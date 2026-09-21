@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { Menu, X, Home, MessageCircle, Info, Settings, Globe } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
@@ -11,6 +11,7 @@ const { t, locale } = useI18n()
 const router = useRouter()
 const open = ref(false)
 const langOpen = ref(false)
+const langRef = ref<HTMLElement>()
 
 const links = [
   { to: '/', label: 'header.home', icon: Home },
@@ -36,6 +37,14 @@ function setLang(code: LangCode) {
   saveLang(code)
   langOpen.value = false
 }
+
+function onDocPointerDown(e: PointerEvent) {
+  if (!langOpen.value) return
+  if (!langRef.value?.contains(e.target as Node)) langOpen.value = false
+}
+
+onMounted(() => document.addEventListener('pointerdown', onDocPointerDown))
+onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointerDown))
 </script>
 
 <template>
@@ -51,7 +60,7 @@ function setLang(code: LangCode) {
       <router-link to="/" class="text-lg font-bold tracking-wide">USTREAM</router-link>
       <div class="flex-1"></div>
       <SearchBox class="hidden sm:flex" />
-      <div class="relative">
+      <div class="relative" ref="langRef">
         <button
           class="cursor-pointer rounded p-2 hover:bg-white/10"
           :aria-label="t('header.lang')"

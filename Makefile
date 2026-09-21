@@ -5,8 +5,5 @@ release:
 dev:
 	npm run dev
 
-mock:
-	npm run mock
-
 build:
 	npm run build

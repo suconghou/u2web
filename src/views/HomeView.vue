@@ -3,35 +3,38 @@ import { ref, onMounted } from 'vue'
 import VideoCard from '@/components/VideoCard.vue'
 import Loading from '@/components/Loading.vue'
 import { mostPopularVideos } from '@/service'
+import { toast } from '@/utils/toast'
 import type { VideoItem } from '@/types'
 
 const items = ref<VideoItem[]>([])
 const loading = ref(true)
 
-async function videoList(videoCategoryId: number, regionCode = 'HK') {
-  const { ok, data } = await mostPopularVideos(regionCode, videoCategoryId)
-  if (!ok) return
-  const seen = new Set<string>()
-  for (const i of items.value) {
-    const key = typeof i.id === 'string' ? i.id : i.id?.videoId ?? ''
-    if (key) seen.add(key)
-  }
-  const merged = [...items.value]
-  for (const item of data.items) {
-    const key = typeof item.id === 'string' ? item.id : item.id?.videoId
-    if (key && !seen.has(key)) {
-      seen.add(key)
-      merged.push(item)
-    }
-  }
-  items.value = merged
+function videoKey(item: VideoItem): string {
+  return typeof item.id === 'string' ? item.id : item.id?.videoId ?? ''
 }
 
 onMounted(async () => {
   loading.value = true
-  await videoList(10, 'TW')
-  await videoList(10)
-  loading.value = false
+  try {
+    const results = await Promise.all([mostPopularVideos('TW', 10), mostPopularVideos('HK', 10)])
+    const seen = new Set<string>()
+    const merged: VideoItem[] = []
+    for (const { ok, data } of results) {
+      if (!ok) continue
+      for (const item of data.items) {
+        const key = videoKey(item)
+        if (key && !seen.has(key)) {
+          seen.add(key)
+          merged.push(item)
+        }
+      }
+    }
+    items.value = merged
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : String(e))
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 

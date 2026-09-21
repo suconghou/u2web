@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import VideoCard from '@/components/VideoCard.vue'
 import { playlistItems, search } from '@/service'
@@ -20,25 +20,29 @@ const page = computed(() => route.query.page as string | undefined)
 const q = computed(() => route.query.q as string | undefined)
 const playlistId = computed(() => props.res.contentDetails?.relatedPlaylists?.uploads ?? '')
 
-async function getPlayList() {
-  const { ok, data } = await playlistItems(playlistId.value, page.value)
-  if (!ok) return
-  listdata.value = data
-}
+/** 请求序号:连续操作时丢弃过期响应 */
+let seq = 0
 
 async function getList() {
+  const cur = ++seq
   disabled.value = true
   window.scrollTo(0, 0)
   try {
     if (filter.value) {
       const { ok, data } = await search(filter.value, page.value, props.channelId)
-      if (!ok) return
-      listdata.value = data
+      if (cur !== seq) return
+      listdata.value = ok ? data : { pageInfo: {}, items: [] }
       return
     }
-    await getPlayList()
+    if (!playlistId.value) {
+      if (cur === seq) listdata.value = { pageInfo: {}, items: [] }
+      return
+    }
+    const { ok, data } = await playlistItems(playlistId.value, page.value)
+    if (cur !== seq) return
+    listdata.value = ok ? data : { pageInfo: {}, items: [] }
   } finally {
-    disabled.value = false
+    if (cur === seq) disabled.value = false
   }
 }
 
@@ -53,19 +57,22 @@ function clearSearch() {
 }
 
 function prev() {
-  router.push({ name: route.name as string, query: { page: listdata.value.prevPageToken, q: filter.value } })
+  router.push({ name: route.name as string, query: { page: listdata.value.prevPageToken, q: q.value } })
 }
 
 function next() {
-  router.push({ name: route.name as string, query: { page: listdata.value.nextPageToken, q: filter.value } })
+  router.push({ name: route.name as string, query: { page: listdata.value.nextPageToken, q: q.value } })
 }
 
-watch([page, q], () => getList())
-watch(() => props.channelId, () => getList())
-onMounted(() => {
-  filter.value = q.value ?? ''
-  getList()
-})
+// 翻页/搜索词/上传列表 ID 变化时重新拉取;同步输入框(覆盖浏览器前进/后退)
+watch(
+  [page, q, playlistId],
+  () => {
+    filter.value = q.value ?? ''
+    void getList()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

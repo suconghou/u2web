@@ -47,14 +47,15 @@ function toChannel() {
   <div class="cursor-pointer" @click="toVideo">
     <div class="overflow-hidden rounded-lg bg-white shadow-sm transition-shadow hover:shadow-md">
       <div class="relative aspect-video overflow-hidden bg-zinc-200">
-        <img :src="defaultImg" class="absolute inset-0 h-full w-full object-cover" :class="{ hidden: loaderr }" />
+        <img :src="defaultImg" class="absolute inset-0 h-full w-full object-cover" :class="{ hidden: !loading && !loaderr }" />
         <img
+          v-if="src"
           :src="src"
           class="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
           :class="loading ? 'opacity-0' : 'opacity-100'"
           loading="lazy"
           @load="loading = false"
-          @error="loaderr = true"
+          @error="loaderr = true; loading = false"
         />
         <span v-if="duration" class="absolute right-1.5 bottom-1.5 rounded bg-black/80 px-1.5 py-0.5 text-xs text-white">
           {{ duration }}

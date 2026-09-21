@@ -25,14 +25,18 @@ export const timeBefore = (time?: string): string => {
   return t('utils.justNow')
 }
 
-/** ISO8601 时长(P0D/PT1H2M3S) → 01:02:03;P0D 表示直播 */
-export const formatDuration = (t?: string): string => {
-  if (!t) return ''
-  if (t === 'P0D') return i18n.global.t('utils.live')
-  const m: Record<string, string> = { H: ':00:00', M: ':00', S: '' }
-  const l = m[t.slice(-1)] ?? ''
-  const arr = t.match(/[0-9]\d{0,3}/g)?.map((v) => (v.length === 1 ? '0' + v : v)) ?? []
-  return arr.join(':') + l
+/** ISO8601 时长(PT1H2M3S) → 01:02:03;P0D 表示直播 */
+export const formatDuration = (iso?: string): string => {
+  if (!iso) return ''
+  if (iso === 'P0D') return i18n.global.t('utils.live')
+  const days = Number(iso.match(/P(\d+)D/)?.[1] ?? 0)
+  const time = iso.split('T')[1] ?? ''
+  if (!time && !days) return ''
+  const h = Number(time.match(/(\d+)H/)?.[1] ?? 0) + days * 24
+  const m = Number(time.match(/(\d+)M/)?.[1] ?? 0)
+  const s = Number(time.match(/(\d+)S/)?.[1] ?? 0)
+  const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
+  return h ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`
 }
 
 /** 观看次数: 中文/韩/日 用万位("1.2万次观看"),英文用 K/M("12K views") */
@@ -65,11 +69,12 @@ export const byteFormat = (size: number): string => {
   const name = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   let pos = 0
   let n = size
-  while (n >= 1024) {
+  while (n >= 1024 && pos < name.length - 1) {
     n /= 1024
     pos++
   }
-  return `${n.toFixed(2)} ${name[pos]}`
+  // 字节不显示小数
+  return pos === 0 ? `${n} ${name[pos]}` : `${n.toFixed(2)} ${name[pos]}`
 }
 
 export const debounce = <A extends unknown[]>(func: (...args: A) => void, delay: number) => {
@@ -90,32 +95,4 @@ export const addEventListenerOnce = <K extends keyof DocumentEventMap>(
     fn(e)
   }
   element.addEventListener(event, func)
-}
-
-/** 串行任务队列(播放器 loadbar 刷新用,避免并发堆积) */
-export class asyncQueue {
-  private runing = false
-  constructor(private tasks: Array<() => Promise<void>>) {
-    this.run()
-  }
-  push(task: () => Promise<void>) {
-    this.tasks.push(task)
-    this.run()
-  }
-  clear() {
-    this.tasks = []
-  }
-  private async run() {
-    if (this.runing) return
-    this.runing = true
-    let item: (() => Promise<void>) | undefined
-    while ((item = this.tasks.shift())) {
-      try {
-        await item()
-      } catch {
-        // 忽略单个任务错误
-      }
-    }
-    this.runing = false
-  }
 }

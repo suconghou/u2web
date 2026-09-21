@@ -6,6 +6,7 @@ import { ChevronDown } from '@lucide/vue'
 import VideoCard from '@/components/VideoCard.vue'
 import Loading from '@/components/Loading.vue'
 import { search } from '@/service'
+import { toast } from '@/utils/toast'
 import type { ListResponse } from '@/types'
 
 const { t } = useI18n()
@@ -15,7 +16,6 @@ const router = useRouter()
 const loading = ref(true)
 const disabled = ref(false)
 const result = ref<ListResponse>({ items: [] })
-const rcode = ref((route.query.regionCode as string) || '')
 const regionOpen = ref(false)
 const regionRef = ref<HTMLElement>()
 
@@ -23,30 +23,39 @@ const options = computed(() => ['HK', 'TW', 'US', 'KR', 'JP'].map((v) => ({ name
 
 const q = computed(() => route.query.q as string | undefined)
 const page = computed(() => route.query.page as string | undefined)
+/** 地区直接由路由派生,前进/后退也能正确刷新结果 */
+const rcode = computed(() => (route.query.regionCode as string) || '')
+
+/** 请求序号:连续触发搜索时丢弃过期响应 */
+let seq = 0
 
 async function doSearch() {
+  const cur = ++seq
   loading.value = true
   disabled.value = true
   window.scrollTo(0, 0)
-  const { ok, data } = await search(q.value, page.value, undefined, rcode.value || undefined)
-  disabled.value = false
-  loading.value = false
-  if (!ok) return
-  result.value = data
-  rcode.value = (route.query.regionCode as string) || ''
-}
-
-function rcodeChange() {
-  router.push({
-    name: route.name as string,
-    query: { ...route.query, regionCode: rcode.value, page: undefined },
-  })
+  try {
+    const { ok, data } = await search(q.value, page.value, undefined, rcode.value || undefined)
+    if (cur !== seq) return
+    result.value = ok ? data : { items: [] }
+  } catch (e) {
+    if (cur !== seq) return
+    result.value = { items: [] }
+    toast.error(e instanceof Error ? e.message : String(e))
+  } finally {
+    if (cur === seq) {
+      disabled.value = false
+      loading.value = false
+    }
+  }
 }
 
 function selectRegion(v: string) {
-  rcode.value = v
   regionOpen.value = false
-  rcodeChange()
+  router.push({
+    name: route.name as string,
+    query: { ...route.query, regionCode: v || undefined, page: undefined },
+  })
 }
 
 function onDocClick(e: MouseEvent) {
@@ -68,7 +77,6 @@ function next() {
 }
 
 watch([q, page, rcode], () => doSearch())
-onMounted(() => doSearch())
 </script>
 
 <template>

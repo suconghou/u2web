@@ -17,6 +17,7 @@ export default {
   backtop: { label: '맨 위로' },
   player: {
     notFound: '리소스를 찾을 수 없거나 지원되지 않습니다',
+    play: '재생',
     noFastload: 'fastloadjs가 로드되지 않았습니다',
     unsupported: '이 브라우저는 지원되지 않습니다. 다른 브라우저를 사용해 주세요',
     playError: '재생 오류, 새로고침 후 다시 시도해 주세요',
@@ -30,6 +31,9 @@ export default {
     screenshot: '스크린샷',
     fullscreen: '전체 화면',
     exitFullscreen: '전체 화면 종료',
+    pip: '화면 속 화면',
+    webFullscreen: '웹 전체 화면',
+    exitWebFullscreen: '웹 전체 화면 종료',
     mute: '음소거',
     unmute: '음소거 해제',
     playlist: '재생 목록',
@@ -109,6 +113,7 @@ export default {
     fav: '즐겨찾기',
     playlists: '재생 목록',
     createdOn: '{date} 생성',
+    notFound: '채널이 없거나 권한이 없습니다',
   },
   video: { notFound: '동영상을 찾을 수 없거나 권한이 없습니다', parseFailed: '파싱 실패', download: '다운로드', noRelated: '관련 동영상 없음' },
   chat: {

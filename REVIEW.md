@@ -45,3 +45,8 @@ Review 时间:2026-08-11,基于 `vue-tsc` 通过、`vite build` 通过、Playwri
 ## 结论
 
 代码层面可交付。上线唯一硬性前置:配置可用的内容/解析后端与信令服务器。
+
+## 更新 (2026-09-03)
+
+- `scripts/mock-server.mjs` 假数据后端已移除,开发时通过设置页(localStorage)或 vite proxy 对接真实后端
+- fastloadjs 已本地 vendoring 至 `public/fastload.min.js`(版本锁定 `assets@8a64290`),不再依赖第三方 CDN,"建议项"中的 CDN/SRI 问题就此关闭

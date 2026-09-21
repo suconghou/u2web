@@ -19,7 +19,10 @@ watch(
 function doSearch() {
   const q = text.value.trim()
   if (!q) return
-  router.push({ name: 'search', query: { q } })
+  const query: Record<string, string> = { q }
+  const region = route.query.regionCode
+  if (route.name === 'search' && typeof region === 'string' && region) query.regionCode = region
+  router.push({ name: 'search', query })
 }
 </script>
 

@@ -17,6 +17,7 @@ export default {
   backtop: { label: 'Back to top' },
   player: {
     notFound: 'Resource not found or unsupported',
+    play: 'Play',
     noFastload: 'fastloadjs not loaded',
     unsupported: 'This browser is not supported, please switch browsers',
     playError: 'Playback failed, please refresh and retry',
@@ -30,6 +31,9 @@ export default {
     screenshot: 'Screenshot',
     fullscreen: 'Full screen',
     exitFullscreen: 'Exit full screen',
+    pip: 'Picture-in-Picture',
+    webFullscreen: 'Web full screen',
+    exitWebFullscreen: 'Exit web full screen',
     mute: 'Mute',
     unmute: 'Unmute',
     playlist: 'Playlist',
@@ -118,6 +122,7 @@ export default {
     fav: 'Favorites',
     playlists: 'Playlists',
     createdOn: 'Created {date}',
+    notFound: 'Channel not found or no permission',
   },
   video: { notFound: 'Video not found or no permission', parseFailed: 'Parse failed', download: 'Download', noRelated: 'No related videos' },
   chat: {

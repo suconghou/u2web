@@ -3,7 +3,8 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Send } from '@lucide/vue'
 import { byteFormat } from '@/utils'
-import { getRtc, msgList, sendChat, setChatPageActive } from '@/service/rtc'
+import { getRtc, addMsg, onMessages, msgList, sendChat, setChatPageActive } from '@/service/rtc'
+import { toast } from '@/utils/toast'
 import type { Rtc, RtcPeerStat } from '@/types'
 
 const { t } = useI18n()
@@ -15,6 +16,7 @@ const listEl = ref<HTMLElement | null>(null)
 
 let rtc: Rtc | null = null
 let timer: ReturnType<typeof setInterval> | undefined
+let offMessages: (() => void) | undefined
 
 const disabled = computed(() => !text.value.trim())
 
@@ -27,32 +29,35 @@ function render() {
 }
 
 function send() {
-  const t = text.value.trim()
-  if (!t) return
-  if (!sendChat(t)) return
-  msgList.push({ uid: id.value, text: t })
+  const body = text.value.trim()
+  if (!body) return
+  if (!sendChat(body)) {
+    toast.error(t('player.noFastload'))
+    return
+  }
+  addMsg({ uid: id.value, text: body })
   text.value = ''
-  render()
 }
 
 onMounted(() => {
   setChatPageActive(true)
+  offMessages = onMessages(render)
   rtc = getRtc()
-  if (!rtc) return
-  id.value = rtc.id
-  timer = setInterval(() => {
-    if (rtc) stat.value = rtc.getStats()
-  }, 1000)
-  setTimeout(() => {
-    if (rtc) stat.value = rtc.getStats()
-    if (!msgList.length) {
-      msgList.push({ uid: t('chat.robot'), text: t('chat.hint') })
-    }
-    render()
-  }, 200)
+  if (rtc) {
+    id.value = rtc.id
+    timer = setInterval(() => {
+      if (rtc) stat.value = rtc.getStats()
+    }, 1000)
+    setTimeout(() => {
+      if (rtc) stat.value = rtc.getStats()
+    }, 200)
+  }
+  if (!msgList.length) addMsg({ uid: t('chat.robot'), text: t('chat.hint') })
+  else render()
 })
 
 onBeforeUnmount(() => {
+  offMessages?.()
   setChatPageActive(false)
   clearInterval(timer)
 })
@@ -96,7 +101,8 @@ onBeforeUnmount(() => {
             v-model="text"
             maxlength="200"
             class="h-20 w-full resize-none rounded border-none p-2 text-sm outline-none"
-            :placeholder="t('chat.placeholder')"            @keydown.enter.stop.prevent="send"
+            :placeholder="t('chat.placeholder')"
+            @keydown.enter.stop.prevent="send"
           ></textarea>
           <button
             class="absolute right-2 bottom-2 flex cursor-pointer items-center gap-1 rounded bg-brand-600 px-3 py-1.5 text-sm text-white hover:bg-brand-700 disabled:opacity-50"

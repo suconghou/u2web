@@ -6,8 +6,27 @@ export interface ChatMessage {
   text: string
 }
 
-/** 跨页面保留的消息列表(切换路由不丢失) */
+/** 跨页面保留的消息列表(切换路由不丢失);超出上限丢弃最早的消息 */
 export const msgList: ChatMessage[] = []
+const MAX_MSGS = 300
+
+type MsgListener = () => void
+const msgListeners = new Set<MsgListener>()
+
+/** 追加一条消息(含本地回显),超出上限丢弃最早的 */
+export function addMsg(msg: ChatMessage) {
+  msgList.push(msg)
+  if (msgList.length > MAX_MSGS) msgList.splice(0, msgList.length - MAX_MSGS)
+  msgListeners.forEach((fn) => fn())
+}
+
+/** 订阅消息列表变化;返回取消订阅函数 */
+export function onMessages(fn: MsgListener): () => void {
+  msgListeners.add(fn)
+  return () => {
+    msgListeners.delete(fn)
+  }
+}
 
 let chatPageActive = false
 let rtc: Rtc | null = null
@@ -25,7 +44,7 @@ export function getRtc(): Rtc | null {
   if (rtc && !listening) {
     listening = true
     rtc.listen('chat', ({ uid, data }) => {
-      msgList.push({ uid, text: data.text })
+      addMsg({ uid, text: data.text })
       if (!chatPageActive) chatStore.bump()
     })
   }

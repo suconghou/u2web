@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ListRow from '@/components/ListRow.vue'
@@ -17,13 +17,19 @@ const disabled = ref(false)
 const isListRoot = computed(() => route.name === 'channel.list')
 const page = computed(() => route.query.page as string | undefined)
 
+let seq = 0
+
 async function getPlayList() {
+  const cur = ++seq
   window.scrollTo(0, 0)
   disabled.value = true
-  const { ok, data } = await playlistsInChannel(props.channelId, page.value)
-  disabled.value = false
-  if (!ok) return
-  listdata.value = data
+  try {
+    const { ok, data } = await playlistsInChannel(props.channelId, page.value)
+    if (cur !== seq) return
+    listdata.value = ok ? data : { pageInfo: {}, items: [] }
+  } finally {
+    if (cur === seq) disabled.value = false
+  }
 }
 
 function prev() {
@@ -34,8 +40,13 @@ function next() {
   router.push({ name: route.name as string, query: { page: listdata.value.nextPageToken } })
 }
 
-watch(page, () => getPlayList())
-onMounted(() => getPlayList())
+watch(
+  [() => props.channelId, page, isListRoot],
+  () => {
+    if (isListRoot.value) void getPlayList()
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

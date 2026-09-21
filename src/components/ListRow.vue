@@ -27,6 +27,9 @@ const v = computed(() => props.item.snippet ?? {})
 
 const videoId = computed(() => {
   if (v.value.resourceId?.videoId) return v.value.resourceId.videoId
+  const iid = props.item.id
+  if (typeof iid === 'object') return iid?.videoId ?? ''
+  if (typeof iid === 'string' && props.video) return iid
   const m = v.value.thumbnails?.high?.url?.match(/\/([\w-]{5,20})\//)
   return m ? m[1] : ''
 })
@@ -66,7 +69,7 @@ function toChannel() {
   >
     <div class="flex gap-3" :class="mini ? '' : 'sm:flex-row flex-col'">
       <div class="relative shrink-0 overflow-hidden rounded bg-zinc-200" :class="mini ? 'w-1/2 aspect-video' : 'w-full sm:w-1/3 aspect-video'">
-        <img :src="defaultImg" class="absolute inset-0 h-full w-full object-cover" :class="{ hidden: loaderr }" />
+        <img :src="defaultImg" class="absolute inset-0 h-full w-full object-cover" :class="{ hidden: !loading && !loaderr }" />
         <img
           v-if="src"
           :src="src"
@@ -74,7 +77,7 @@ function toChannel() {
           :class="loading ? 'opacity-0' : 'opacity-100'"
           loading="lazy"
           @load="loading = false"
-          @error="loaderr = true"
+          @error="loaderr = true; loading = false"
         />
       </div>
       <div class="min-w-0 flex-1" :class="mini ? '' : 'sm:pl-2'">

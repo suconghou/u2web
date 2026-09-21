@@ -17,6 +17,7 @@ export default {
   backtop: { label: '回到顶部' },
   player: {
     notFound: '资源不存在或不支持',
+    play: '播放',
     noFastload: 'fastloadjs 未加载',
     unsupported: '此浏览器不支持,请更换浏览器',
     playError: '播放出错,请刷新重试',
@@ -30,6 +31,9 @@ export default {
     screenshot: '截图',
     fullscreen: '全屏',
     exitFullscreen: '退出全屏',
+    pip: '画中画',
+    webFullscreen: '网页全屏',
+    exitWebFullscreen: '退出网页全屏',
     mute: '静音',
     unmute: '取消静音',
     playlist: '播放列表',
@@ -94,6 +98,7 @@ export default {
     fav: '收藏的',
     playlists: '播放列表',
     createdOn: '创建于{date}',
+    notFound: '频道不存在或无权限',
   },
   video: { notFound: '视频不存在或无权限', parseFailed: '解析失败', download: '下载视频', noRelated: '暂无相关视频' },
   chat: {

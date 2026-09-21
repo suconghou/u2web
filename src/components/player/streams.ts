@@ -66,10 +66,8 @@ const prefer_keys = sessionStorage.normal ? KEY_GROUPS[3] : KEY_GROUPS[2]
 
 /** 该 itag 流可播放:有长度且有 init/index range */
 export const canplay = (t?: StreamItem): boolean => {
-  if (t && t.len) {
-    return Object.keys(t.initRange).length + Object.keys(t.indexRange).length > 0
-  }
-  return false
+  if (!t?.len || !t.initRange || !t.indexRange) return false
+  return Object.keys(t.initRange).length + Object.keys(t.indexRange).length > 0
 }
 
 /** 是否优先使用 webm 容器(Chrome/Firefox;Safari 走 mp4) */

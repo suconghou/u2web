@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
 import { toastState } from '@/utils/toast'
 import { CircleCheck, CircleX, Info } from '@lucide/vue'
 
@@ -9,7 +8,6 @@ const colors = {
   success: 'bg-emerald-600',
   info: 'bg-zinc-800',
 }
-void reactive
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VideoCard from '@/components/VideoCard.vue'
 import { playlistItems } from '@/service'
@@ -13,18 +13,29 @@ const disabled = ref(false)
 
 const playlistId = computed(() => props.res.contentDetails?.relatedPlaylists?.favorites ?? '')
 
+let seq = 0
+
 async function getPlayList(pageToken?: string) {
+  const cur = ++seq
   window.scrollTo(0, 0)
   disabled.value = true
-  const { ok, data } = await playlistItems(playlistId.value, pageToken)
-  disabled.value = false
-  if (!ok) return
-  listdata.value = data
+  try {
+    const { ok, data } = await playlistItems(playlistId.value, pageToken)
+    if (cur !== seq) return
+    listdata.value = ok ? data : { pageInfo: {}, items: [] }
+  } finally {
+    if (cur === seq) disabled.value = false
+  }
 }
 
-onMounted(() => {
-  if (playlistId.value) getPlayList()
-})
+watch(
+  playlistId,
+  (id) => {
+    if (id) void getPlayList()
+    else listdata.value = { pageInfo: {}, items: [] }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

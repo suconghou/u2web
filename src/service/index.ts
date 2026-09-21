@@ -34,6 +34,7 @@ export function apiBaseURL(): string {
 
 /** 视频封面图地址;可用 localStorage.imgServer 单独指定 */
 export function imgSrc(id?: string): string {
+  if (!id) return ''
   const server = localStorage.getItem('imgServer')
   const base = server || videoBaseURLs()[0] || ''
   return `${base}/${id}.jpg`
@@ -41,13 +42,14 @@ export function imgSrc(id?: string): string {
 
 const reportError = (e: unknown) => {
   console.error(e)
-  toast.error(e instanceof Error ? e.message || e.stack || String(e) : String(e))
+  const text = e instanceof Error ? e.message || e.stack || String(e) : e == null ? '' : String(e)
+  if (text) toast.error(text)
 }
 
 const filter = <T>(res: { status: number; statusText: string; data: T & { code?: number; msg?: string; error?: { errors?: { message?: string }[] } } }): ApiResult<T> => {
   if (res.status >= 200 && res.status < 300) {
-    if (Number.isInteger(res.data.code) && res.data.code !== 0) {
-      reportError(res.data.msg)
+    if (res.data && Number.isInteger(res.data.code) && res.data.code !== 0) {
+      reportError(res.data.msg || res.statusText)
       return { ok: false, data: res.data, status: res.status }
     }
     return { ok: true, data: res.data, status: res.status }
@@ -94,8 +96,8 @@ export const playerInfo = async (id: string): Promise<ApiResult<PlayerInfo>> => 
         baseURL: urls[i],
       })
       if (res.ok) {
-        const data = res.data as unknown as { error?: unknown; streams?: Record<string, unknown> }
-        if (i < urls.length - 1 && (data.error || !data.streams || !Object.keys(data.streams).length)) {
+        const data = res.data as unknown as { error?: unknown; streams?: Record<string, unknown> } | null
+        if (i < urls.length - 1 && (data?.error || !data?.streams || !Object.keys(data.streams).length)) {
           continue
         }
         return res

@@ -42,14 +42,23 @@ const items = computed(() =>
   }),
 )
 
+/** 请求序号:视频快速切换时丢弃过期响应(信息与播放信息各自独立计数) */
+let infoSeq = 0
+let playerSeq = 0
+let listSeq = 0
+
 async function getInfo(vid: string) {
+  const cur = ++infoSeq
   try {
     loading.value = true
     error.value = ''
     void getPlayer(vid)
     const { ok, data } = await videoInfo(vid)
-    loading.value = false
-    if (!ok) return
+    if (cur !== infoSeq) return
+    if (!ok) {
+      error.value = data.msg || t('video.notFound')
+      return
+    }
     info.value = data.items[0] ?? {}
     if (!info.value.snippet) {
       error.value = t('video.notFound')
@@ -57,34 +66,55 @@ async function getInfo(vid: string) {
     }
     document.title = info.value.snippet.title ?? t('site.suffix')
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : String(e))
+    if (cur !== infoSeq) return
+    error.value = e instanceof Error ? e.message : String(e)
+    toast.error(error.value)
+  } finally {
+    if (cur === infoSeq) loading.value = false
   }
 }
 
 async function getPlayer(vid: string) {
+  const cur = ++playerSeq
   try {
     pinfo.value = {}
     const { ok, data } = await playerInfo(vid)
+    if (cur !== playerSeq) return
     if (!ok) {
       pinfo.value = { error: data.msg || t('video.parseFailed') }
       return
     }
     pinfo.value = data
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : String(e))
+    if (cur !== playerSeq) return
+    const msg = e instanceof Error ? e.message : String(e)
+    pinfo.value = { error: msg || t('video.parseFailed') }
+    toast.error(msg)
   }
 }
 
 async function getList(lid: string) {
-  const { ok, data } = await playlistItems(lid)
-  if (!ok) return
-  listdata.value = data
+  const cur = ++listSeq
+  try {
+    const { ok, data } = await playlistItems(lid)
+    if (cur !== listSeq) return
+    if (!ok) return
+    listdata.value = data
+  } catch (e) {
+    if (cur === listSeq) toast.error(e instanceof Error ? e.message : String(e))
+  }
 }
 
 async function getRelated(vid: string) {
-  const { ok, data } = await relatedVideo(vid)
-  if (!ok) return
-  listdata.value = data
+  const cur = ++listSeq
+  try {
+    const { ok, data } = await relatedVideo(vid)
+    if (cur !== listSeq) return
+    if (!ok) return
+    listdata.value = data
+  } catch (e) {
+    if (cur === listSeq) toast.error(e instanceof Error ? e.message : String(e))
+  }
 }
 
 function toChannel() {
@@ -124,15 +154,6 @@ watch(
     if (lid) void getList(lid)
   },
   { immediate: true },
-)
-
-watch(
-  () => route.path,
-  () => {
-    const n = document.querySelector('.m-title')
-    if (n) n.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    else window.scrollTo(0, 0)
-  },
 )
 
 onBeforeRouteLeave(() => {
@@ -195,8 +216,8 @@ onBeforeUnmount(() => {
         <p class="mt-4 text-sm whitespace-pre-line break-all text-zinc-600">{{ v.description }}</p>
 
         <div v-if="v.tags?.length" class="mt-3 flex flex-wrap gap-1.5">
-          <span v-for="t in v.tags" :key="t" class="rounded-full bg-zinc-300 px-2.5 py-0.5 text-xs text-white">
-            {{ t }}
+          <span v-for="tag in v.tags" :key="tag" class="rounded-full bg-zinc-300 px-2.5 py-0.5 text-xs text-white">
+            {{ tag }}
           </span>
         </div>
 

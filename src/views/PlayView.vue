@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, useTemplateRef, onMounted } from 'vue'
+import { ref, computed, useTemplateRef, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import VPlayer from '@/components/player/VPlayer.vue'
@@ -12,11 +12,11 @@ const { t } = useI18n()
 const route = useRoute()
 
 const vid = computed(() => (route.query.v as string) || '')
-const audio = route.query.audio === 'true' || route.query.audio === '1'
-const level = Number(route.query.level) || 0
-const nop2p = route.query.nop2p === 'true' || route.query.nop2p === '1'
-const screenshot = route.query.screenshot !== 'false' && route.query.screenshot !== '0'
-const playlist = (route.query.playlist as string) || ''
+const audio = computed(() => route.query.audio === 'true' || route.query.audio === '1')
+const level = computed(() => Number(route.query.level) || 0)
+const nop2p = computed(() => route.query.nop2p === 'true' || route.query.nop2p === '1')
+const screenshot = computed(() => route.query.screenshot !== 'false' && route.query.screenshot !== '0')
+const playlist = computed(() => (route.query.playlist as string) || '')
 
 const pinfo = ref<Partial<PlayerInfo>>({})
 const showlist = ref(false)
@@ -24,17 +24,24 @@ const playlistPanel = useTemplateRef<InstanceType<typeof PlaylistPanel>>('playli
 
 const errMsg = computed(() => pinfo.value.error || pinfo.value.msg)
 
+let seq = 0
+
 async function init(id: string) {
+  const cur = ++seq
   try {
     pinfo.value = {}
     const { ok, data } = await playerInfo(id)
+    if (cur !== seq) return
     if (!ok) {
       pinfo.value = { error: data.msg || t('video.parseFailed') }
       return
     }
     pinfo.value = data
   } catch (e) {
-    toast.error(e instanceof Error ? e.message : String(e))
+    if (cur !== seq) return
+    const msg = e instanceof Error ? e.message : String(e)
+    pinfo.value = { error: msg || t('video.parseFailed') }
+    toast.error(msg)
   }
 }
 
@@ -46,10 +53,14 @@ function playNext(info: PlayerInfo) {
   playlistPanel.value?.playNext(info.id)
 }
 
-onMounted(() => {
-  if (!vid.value) return
-  setTimeout(() => init(vid.value), 50)
-})
+watch(
+  vid,
+  (id) => {
+    if (id) void init(id)
+    else pinfo.value = { error: t('video.notFound') }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

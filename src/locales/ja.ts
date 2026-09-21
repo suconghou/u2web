@@ -17,6 +17,7 @@ export default {
   backtop: { label: 'トップへ戻る' },
   player: {
     notFound: 'リソースが見つからないか、サポートされていません',
+    play: '再生',
     noFastload: 'fastloadjs が読み込まれていません',
     unsupported: 'このブラウザはサポートされていません。別のブラウザをお使いください',
     playError: '再生エラーが発生しました。再読み込みしてやり直してください',
@@ -30,6 +31,9 @@ export default {
     screenshot: 'スクリーンショット',
     fullscreen: '全画面',
     exitFullscreen: '全画面を終了',
+    pip: 'ピクチャーインピクチャー',
+    webFullscreen: 'Web全画面',
+    exitWebFullscreen: 'Web全画面を終了',
     mute: 'ミュート',
     unmute: 'ミュート解除',
     playlist: '再生リスト',
@@ -109,6 +113,7 @@ export default {
     fav: 'お気に入り',
     playlists: 'プレイリスト',
     createdOn: '{date} 作成',
+    notFound: 'チャンネルが存在しないか、権限がありません',
   },
   video: { notFound: '動画が見つからないか、権限がありません', parseFailed: '解析失敗', download: 'ダウンロード', noRelated: '関連動画はありません' },
   chat: {
