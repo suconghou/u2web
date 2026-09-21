@@ -73,12 +73,23 @@ function bindLoader(loader: Fastloader | undefined, card: InstanceType<typeof St
   })
 }
 
+/** fastloadjs 的分块对象用 start/end 表示字节区间,StatCard 需要 m/n */
+function toSegments(raw: unknown): Record<number, SegmentItem> {
+  const src = (raw ?? {}) as Record<number, { no: number; start: number; end: number }>
+  const out: Record<number, SegmentItem> = {}
+  for (const k of Object.keys(src)) {
+    const s = src[Number(k)]
+    out[Number(k)] = { no: s.no, m: s.start, n: s.end }
+  }
+  return out
+}
+
 /** 由播放页在 loadersready 事件后调用 */
 function onLoadersready(loaders: Fastloader[], dispatchs: unknown[]) {
   const [vloader, aloader] = loaders
-  const [vd, ad] = dispatchs as [Record<number, SegmentItem>?, Record<number, SegmentItem>?]
-  vdispatch.value = vd ?? {}
-  adispatch.value = ad ?? {}
+  const [vd, ad] = dispatchs as [unknown, unknown]
+  vdispatch.value = toSegments(vd)
+  adispatch.value = toSegments(ad)
   bindLoader(vloader, vCard.value)
   bindLoader(aloader, aCard.value)
 }
