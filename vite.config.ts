@@ -3,13 +3,15 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
-// make release 时 `production=1 npm run build`,产物部署到静态资源服务器,使用绝对路径
-const base = process.env.production
-  ? 'https://assets.suconghou.cn/u2web/static/dist/'
-  : '/'
+// 部署到子路径或独立静态域时,通过 VITE_BASE 指定资源根地址(尾斜杠可省略);
+// index.html 里 %BASE_URL% 会被替换为该值,用于引用 favicon / fastload.min.js 等公共资源
+function assetBase() {
+  const raw = process.env.VITE_BASE || '/'
+  return raw.endsWith('/') ? raw : `${raw}/`
+}
 
 export default defineConfig({
-  base,
+  base: assetBase(),
   plugins: [vue(), tailwindcss()],
   resolve: {
     alias: {

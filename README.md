@@ -19,7 +19,21 @@ pnpm install        # 或 npm install
 pnpm dev            # 本地开发 http://localhost:5173
 pnpm build          # 类型检查 + 生产构建 (dist/)
 pnpm typecheck      # 仅 vue-tsc 类型检查
-make release        # production=1 构建,产物上传静态资源服务器
+make release        # 指定 VITE_BASE 构建后上传静态资源服务器
+```
+
+## 自动发布
+
+推送到 `master`/`main`(或手动触发 "Build and publish")时,GitHub Actions 自动构建并把 `dist/` 同步到 [suconghou/static](https://github.com/suconghou/static) 仓库的 `u2web/` 目录,由 `static.feds.club` 提供服务。
+
+- 构建时注入 `VITE_BASE=https://static.feds.club/u2web/`,`index.html` 与产物内的资源引用都基于该前缀
+- 部署目录取仓库名(`github.event.repository.name`),改名会自动跟随
+- 需要在仓库 Settings → Secrets 配置 `STATIC_TOKEN`(对 `suconghou/static` 有写权限的 PAT),否则发布步骤无权限推送
+
+本地手动发布到其他静态服务时,同样通过 `VITE_BASE` 指定资源根地址,如:
+
+```bash
+VITE_BASE='https://assets.suconghou.cn/u2web/static/dist/' pnpm build
 ```
 
 默认后端地址在 `src/service/index.ts`,可被浏览器 localStorage 覆盖(站点"设置"页)。

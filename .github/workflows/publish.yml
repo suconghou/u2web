@@ -1,0 +1,65 @@
+name: Build and publish
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+concurrency:
+  group: publish-static
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SITE_DIR: ${{ github.event.repository.name }}
+      VITE_BASE: https://static.feds.club/${{ github.event.repository.name }}/
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Checkout static
+        uses: actions/checkout@v6
+        with:
+          repository: suconghou/static
+          token: ${{ secrets.STATIC_TOKEN }}
+          path: static-repo
+          ref: main
+
+      - name: Sync dist into static/${{ env.SITE_DIR }}
+        run: |
+          mkdir -p "static-repo/${SITE_DIR}"
+          rsync -a --delete --exclude '.git' dist/ "static-repo/${SITE_DIR}/"
+
+      - name: Commit and push
+        working-directory: static-repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- "${SITE_DIR}"
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+          git commit -m "chore: update ${SITE_DIR} (${GITHUB_SHA::7})"
+          git push
