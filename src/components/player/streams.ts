@@ -81,26 +81,30 @@ export interface QualityOption {
   itag: number
 }
 
-/** 按 level 分组顺序,选出每个清晰度可播放的 itag(靠后越清晰) */
+/**
+ * 按 level 分组顺序,每个分组选出一档清晰度:
+ * 组内按候选顺序取第一个「有可播放 itag」的清晰度,整组选不出来则跳过该组。
+ * 结果再反转,使菜单按清晰度从高到低展示(默认档位取列表末位)
+ */
 export function buildQualityList(
   playerInfo: PlayerInfo,
   level: number,
   webm: boolean,
 ): QualityOption[] {
   const r: QualityOption[] = []
-  const s = playerInfo.streams
+  // 解析服务在失败或降级响应里可能不带 streams,缺失时按"无可播放流"处理
+  const s: Record<number, StreamItem> = playerInfo.streams ?? {}
   const videos = webm ? TYPES.webm.video : TYPES.mp4.video
   const groups = KEY_GROUPS[level] ?? DEFAULT_KEYS
   for (const groupkeys of groups) {
     for (const q of groupkeys) {
       const itags = videos[q]
       if (!itags) continue
-      for (const i of itags) {
-        if (canplay(s[i])) {
-          r.push({ quality: q, itag: i })
-          break
-        }
-      }
+      // 该清晰度下取第一个可播放的 itag;全都不可播放则继续组内下一档
+      const itag = itags.find((i) => canplay(s[i]))
+      if (itag === undefined) continue
+      r.push({ quality: q, itag })
+      // 本分组已选定一档,进入下一分组
       break
     }
   }
@@ -119,7 +123,6 @@ export function format(item: StreamItem, playerInfo: PlayerInfo): LoadItem {
     index: { start: Number(item.indexRange.start), end: Number(item.indexRange.end) },
     mimeCodec: item.type,
     len: Number(item.len),
-    duration: Number(playerInfo.duration),
     meta: `${playerInfo.id}:${item.itag}`,
     mirrors,
   }
@@ -148,7 +151,8 @@ export function buildLoadItems(
   webm: boolean,
 ): LoadItem[] {
   const r: LoadItem[] = []
-  const s = playerInfo.streams
+  // 见 buildQualityList:streams 缺失时按无可播放流处理,由调用方走 notFound 兜底
+  const s: Record<number, StreamItem> = playerInfo.streams ?? {}
   const t = webm ? TYPES.webm : TYPES.mp4
   if (!audio) {
     if (firstItag && canplay(s[firstItag]) && qlist.find((x) => x.itag === firstItag)) {

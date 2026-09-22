@@ -17,6 +17,7 @@ const aCard = useTemplateRef<InstanceType<typeof StatCard>>('acard')
 const vdispatch = ref<Record<number, SegmentItem>>({})
 const adispatch = ref<Record<number, SegmentItem>>({})
 const stat = ref<Record<string, RtcPeerStat>>({})
+/** 本端节点标识(引擎回传的 rtc.id),非资源的 swarmId */
 const mid = ref('')
 
 const names = computed(() => {
@@ -50,9 +51,11 @@ const LEGEND: { cls: string; key: string }[] = [
 
 function bindLoader(loader: Fastloader | undefined, card: InstanceType<typeof StatCard> | null) {
   if (!loader) return
-  loader.listen('rtc.stat', (s, m) => {
+  // 引擎轮询时回传 (stat, uid),open/close/error 触发时只回传 stat;
+  // 后者不能把已取得的节点标识清空
+  loader.listen('rtc.stat', (s, uid) => {
     stat.value = (s as Record<string, RtcPeerStat>) ?? {}
-    mid.value = String(m ?? '')
+    if (uid) mid.value = String(uid)
   })
   loader.listen('http.start', (item) => {
     card?.statusupdate('http-start', item as SegmentItem)

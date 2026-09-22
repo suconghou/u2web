@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { Fastloader, LoadItem, PlayerInfo } from '@/types'
+import type { FastloadPlayer, Fastloader, LoadItem, PlayerInfo } from '@/types'
 import { buildLoadItems, buildQualityList, isModern, useWebm } from './streams'
 import type { QualityOption } from './streams'
-import { imgSrc } from '@/service'
+import { ICE_SERVERS, imgSrc, signalURL } from '@/service'
 import { timeDuration, debounce, addEventListenerOnce } from '@/utils'
 import { download } from '@/utils/download'
 import Delayer from '@/utils/delayer'
@@ -80,7 +80,7 @@ const menuRow =
   'flex h-10 w-full cursor-pointer items-center gap-3 px-3.5 text-left text-[13px] text-white/90 transition-colors hover:bg-white/10'
 
 const v = ref(false)
-const loader = ref<Fastloader | null>(null)
+const loader = ref<FastloadPlayer | null>(null)
 const delay = ref<Delayer | null>(null)
 
 const paused = ref(true)
@@ -161,6 +161,7 @@ const tickEnd = debounce(() => {
   if (el.duration - el.currentTime < 1) onPlayEnd()
 }, 900)
 
+/** 复位播放状态;不支持 MSE 的浏览器直接置为错误态 */
 function reset() {
   video.value = {
     duration: 0,
@@ -173,6 +174,10 @@ function reset() {
   }
 }
 
+/**
+ * (重)建播放:销毁旧引擎实例、重建 video 元素,再按当前选流结果挂载新的引擎实例。
+ * gen 序号用于作废被连续切换打断的旧流程
+ */
 function init() {
   const gen = ++initGen
   emit('init')
@@ -198,13 +203,13 @@ function init() {
         video.value.error = t('player.noFastload')
         return
       }
+      // 引擎以 tracker 是否为空判断是否启用 P2P,故 nop2p 直接传空串
+      const tracker = props.nop2p ? '' : signalURL()
       loader.value = new fastload({
-        req: '',
         thread: 2,
-        thunk: 1048576,
-        start: 0,
-        end: 1048576,
-        nop2p: props.nop2p,
+        tracker,
+        // 仅在启用 P2P 时需要
+        rtcConf: tracker ? { iceServers: ICE_SERVERS } : undefined,
       })
       loader.value.listen('ready', (loaders, dispatchs) => {
         emit('loadersready', loaders as Fastloader[], dispatchs as unknown[])
@@ -213,7 +218,10 @@ function init() {
         video.value.error = err
         loader.value?.pause()
       })
-      loader.value.attach(el, items)
+      // attach 为异步:内部 sourceOpen 失败会走 error 事件,此处兜住其余拒绝路径
+      void loader.value
+        .attach(el, items)
+        .catch((err) => (video.value.error = err))
       if (!props.audio) {
         const first = items[0]
         switchQuality({ itag: first.itag, quality: first.quality })

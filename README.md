@@ -54,11 +54,13 @@ P2P 分享使用的信令服务器 https://github.com/suconghou/signalserver
 
 P2P 分享使用的网络库 https://github.com/suconghou/libwebrtc
 
-P2P 分享当在线客户端播放的是同一资源(Chrome/Firefox 播放 webm,Safari 播放 mp4)、同一清晰度时才会相互分享。`level` 参数控制清晰度分组,分组越小越容易聚合到同一清晰度。
+P2P 默认关闭:未填写信令服务器时仅走 HTTP 多源多线程下载。在站点"设置"页填写信令服务地址即可启用。
+
+启用后,当在线客户端播放的是同一资源(Chrome/Firefox 播放 webm,Safari 播放 mp4)、同一清晰度时才会相互分享。`level` 参数控制清晰度分组,分组越小越容易聚合到同一清晰度。
 
 ## 网站里的设置说明
 
-这些设置一般无需更改,如播放卡顿,可修改视频解析服务。
+这些设置一般无需更改。如需启用 P2P,填写信令服务器地址;如播放卡顿,可修改视频解析服务。
 
 **内容API服务**(localStorage `apibaseurl`)
 
@@ -87,9 +89,9 @@ P2P 分享当在线客户端播放的是同一资源(Chrome/Firefox 播放 webm,
 
 **信令服务器**(localStorage `ws`)
 
-一般无需修改,可用的后端项目:https://github.com/suconghou/signalserver
+留空表示不启用 P2P。填写后,同一信令服务器下的客户端才会相互分享。
 
-同一信令服务器下的用户才会相互分享。
+可用的后端项目:https://github.com/suconghou/signalserver
 
 ## 嵌入播放页
 

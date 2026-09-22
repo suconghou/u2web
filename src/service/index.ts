@@ -14,8 +14,25 @@ const DEFAULT_ABS =
   'https://stream.pull.workers.dev/video'
 /** 默认内容API服务,可被 localStorage.apibaseurl 覆盖 */
 const DEFAULT_API = 'https://r.suconghou.cn/video/api/v3'
+/** 默认 P2P 信令服务,可被 localStorage.ws 覆盖;留空表示默认不启用 P2P(纯 HTTP 下载) */
+const DEFAULT_SIGNAL = ''
+
+/** 启用 P2P 时的 ICE 服务器(NAT 穿透);与信令服务配套,可按需替换 */
+export const ICE_SERVERS: RTCIceServer[] = [
+  { urls: 'stun:stun.voipbuster.com:3478' },
+  { urls: 'stun:stun.voipstunt.com:3478' },
+  { urls: 'stun:stun.linphone.org:3478' },
+]
 
 export const defaultImg = 'https://assets.suconghou.cn/defaultImg.png'
+
+/**
+ * P2P 信令服务地址:localStorage `ws`(设置页)优先,未配置时用 DEFAULT_SIGNAL。
+ * 引擎以 tracker 是否为空判断是否启用 P2P,故返回空串即表示纯 HTTP 下载
+ */
+export function signalURL(): string {
+  return localStorage.getItem('ws') || DEFAULT_SIGNAL
+}
 
 /** 视频解析服务镜像列表;相对路径解析为当前站点 */
 export function videoBaseURLs(): string[] {
