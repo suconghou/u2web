@@ -2,7 +2,6 @@ export default {
   site: { suffix: 'USTREAM - P2Pシェア' },
   header: {
     home: 'ホーム',
-    about: '概要',
     setting: '設定',
     menu: 'メニュー',
     closeMenu: 'メニューを閉じる',
@@ -53,44 +52,6 @@ export default {
   },
   searchView: { results: '関連コンテンツ {count} 件', allRegions: 'すべての地域', region: '地域フィルター' },
   regions: { HK: '香港', TW: '台湾', US: 'アメリカ', KR: '韓国', JP: '日本' },
-  about: {
-    frontend: 'フロントエンド',
-    backend: 'バックエンド',
-    signal: 'シグナリングサーバー',
-    license: 'このプロジェクトは学習目的のみです。他の用途には使用しないでください。',
-    star: '役に立つと思ったら Star をお願いします',
-    items: {
-      webui: { name: 'WEBUI', desc: 'Vue + Vue-Router + axios + Tailwind CSS' },
-      loader: {
-        name: 'Loader',
-        desc: 'マルチスレッドダウンローダー + Media Source Extensions DASH 再生エンジン + P2P ダウンロード',
-      },
-      p2p: { name: 'P2P エンジン', desc: 'WebRTC ベースのメッシュ型多対多 P2P ネットワークライブラリ、シグナリングサーバーが必要' },
-      mediaparse: {
-        name: 'SIDX / EBML パーサー',
-        desc: 'mp4/webm から seek インデックスを解析し、セグメント読み込みをサポート',
-      },
-      videoproxy: {
-        name: 'videoproxy',
-        desc: 'Go 製フル機能版、動画解析とリソース API を含む',
-      },
-      youtubevideoparser: {
-        name: 'youtubevideoparser',
-        desc: 'Go 製の動画解析ライブラリ、内蔵キャッシュ、2 つの解析モードを自動切替',
-      },
-      u2proxyapi: { name: 'u2proxyapi', desc: 'GAE+cf で動作する Python 版リソース API、内蔵キャッシュ' },
-      u2parse: { name: 'u2parse', desc: 'Python 版動画解析、解析のみ提供、トラフィックプロキシが必要' },
-      u2worker: { name: 'u2worker', desc: 'cf worker 版動画解析、多段内蔵キャッシュ、CDN フレンドリー' },
-      ujparse: { name: 'ujparse', desc: 'cf worker/node/ブラウザで動作する TypeScript 動画解析ライブラリ' },
-      ustream: { name: 'ustream', desc: '現在の稼働版、vercel にデプロイ' },
-      videortc: { name: 'videortc', desc: '常時オンラインの P2P サーバー側' },
-      u2flutter: { name: 'u2flutter', desc: 'Flutter で書かれたシンプルなクライアント' },
-      signalserver: {
-        name: 'signalserver',
-        desc: 'ノード発見とシグナリング交換のための NodeJS websocket サーバー',
-      },
-    },
-  },
   notFound: { title: '404 ページが見つかりません' },
   setting: {
     title: '設定',

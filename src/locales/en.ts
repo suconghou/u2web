@@ -2,7 +2,6 @@ export default {
   site: { suffix: 'USTREAM - P2P Sharing' },
   header: {
     home: 'Home',
-    about: 'About',
     setting: 'Settings',
     menu: 'Menu',
     closeMenu: 'Close menu',
@@ -53,53 +52,6 @@ export default {
   },
   searchView: { results: '{count} related items', allRegions: 'All regions', region: 'Region filter' },
   regions: { HK: 'Hong Kong', TW: 'Taiwan', US: 'United States', KR: 'South Korea', JP: 'Japan' },
-  about: {
-    frontend: 'Frontend',
-    backend: 'Backend',
-    signal: 'Signaling server',
-    license: 'This project is for learning purposes only. Do not use it for other purposes.',
-    star: 'If you find it useful, please Star',
-    items: {
-      webui: { name: 'WEBUI', desc: 'Vue + Vue-Router + axios + Tailwind CSS' },
-      loader: {
-        name: 'Loader',
-        desc: 'Multithreaded downloader + Media Source Extensions DASH playback engine + P2P downloading',
-      },
-      p2p: { name: 'P2P engine', desc: 'WebRTC-based mesh many-to-many P2P network library, requires a signaling server' },
-      mediaparse: {
-        name: 'SIDX & EBML parser',
-        desc: 'Analyzes seek indexes from mp4/webm to support segment loading',
-      },
-      videoproxy: {
-        name: 'videoproxy',
-        desc: 'Full-featured Go version, includes video parsing and resource API',
-      },
-      youtubevideoparser: {
-        name: 'youtubevideoparser',
-        desc: 'Video parsing library written in Go with built-in cache and two auto-switching parse modes',
-      },
-      u2proxyapi: {
-        name: 'u2proxyapi',
-        desc: 'Python resource API running on GAE+cf with built-in cache',
-      },
-      u2parse: { name: 'u2parse', desc: 'Python video parser, parsing only, requires a traffic proxy' },
-      u2worker: {
-        name: 'u2worker',
-        desc: 'cf worker video parser with multi-level built-in cache, CDN friendly',
-      },
-      ujparse: {
-        name: 'ujparse',
-        desc: 'TypeScript video parsing library, works on cf worker/node/browser',
-      },
-      ustream: { name: 'ustream', desc: 'Current working version, deployed on vercel' },
-      videortc: { name: 'videortc', desc: 'Always-online P2P server side' },
-      u2flutter: { name: 'u2flutter', desc: 'Simple client written in Flutter' },
-      signalserver: {
-        name: 'signalserver',
-        desc: 'NodeJS websocket server for peer discovery and signaling exchange',
-      },
-    },
-  },
   notFound: { title: '404 Page not found' },
   setting: {
     title: 'Settings',

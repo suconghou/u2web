@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { Menu, Home, Info, Settings, Globe } from '@lucide/vue'
+import { Menu, Home, Settings, Globe } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { saveLang, type LangCode } from '@/locales'
 import SearchBox from './SearchBox.vue'
@@ -14,7 +14,6 @@ const langRef = ref<HTMLElement>()
 
 const links = [
   { to: '/', label: 'header.home', icon: Home },
-  { to: '/about', label: 'header.about', icon: Info },
   { to: '/setting', label: 'header.setting', icon: Settings },
 ]
 
@@ -55,7 +54,20 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointerDo
       >
         <Menu class="h-5 w-5" />
       </button>
-      <router-link to="/" class="text-lg font-bold tracking-wide">USTREAM</router-link>
+      <!-- LOGO:胶片 + 播放键,描边与填充取 currentColor,随头部文字色 -->
+      <router-link to="/" class="flex shrink-0 items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-white/10">
+        <svg viewBox="0 0 32 32" fill="none" class="h-7 w-7" aria-hidden="true">
+          <rect x="2" y="5" width="28" height="22" rx="4.5" stroke="currentColor" stroke-width="2.2" />
+          <rect x="5.6" y="9" width="2.6" height="3.4" rx="0.9" fill="currentColor" />
+          <rect x="5.6" y="14.3" width="2.6" height="3.4" rx="0.9" fill="currentColor" />
+          <rect x="5.6" y="19.6" width="2.6" height="3.4" rx="0.9" fill="currentColor" />
+          <rect x="23.8" y="9" width="2.6" height="3.4" rx="0.9" fill="currentColor" />
+          <rect x="23.8" y="14.3" width="2.6" height="3.4" rx="0.9" fill="currentColor" />
+          <rect x="23.8" y="19.6" width="2.6" height="3.4" rx="0.9" fill="currentColor" />
+          <path d="M12.6 10.8 L21 16 L12.6 21.2 Z" fill="currentColor" />
+        </svg>
+        <span class="text-lg font-bold tracking-wide">USTREAM</span>
+      </router-link>
       <div class="flex-1"></div>
       <SearchBox class="hidden sm:flex" />
       <div class="relative" ref="langRef">
