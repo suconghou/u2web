@@ -27,3 +27,4 @@ pnpm-debug.log*
 # Tool artifacts
 .playwright-mcp/
 .omo/
+.workbuddy/

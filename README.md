@@ -19,18 +19,26 @@ pnpm install        # 或 npm install
 pnpm dev            # 本地开发 http://localhost:5173
 pnpm build          # 类型检查 + 生产构建 (dist/)
 pnpm typecheck      # 仅 vue-tsc 类型检查
-make release        # 指定 VITE_BASE 构建后上传静态资源服务器
 ```
 
-## 自动发布
+## 部署
 
-推送到 `master`/`main`(或手动触发 "Build and publish")时,GitHub Actions 自动构建并把 `dist/` 同步到 [suconghou/static](https://github.com/suconghou/static) 仓库的 `u2web/` 目录,由 `static.feds.club` 提供服务。
+站点部署在 Cloudflare Pages,访问地址 https://u2web.pages.dev/(Pages 项目绑定部署仓库
+[suconghou/ustream-pages](https://github.com/suconghou/ustream-pages) 的 `master` 分支)。
 
-- 构建时注入 `VITE_BASE=https://static.feds.club/u2web/`,`index.html` 与产物内的资源引用都基于该前缀
-- 部署目录取仓库名(`github.event.repository.name`),改名会自动跟随
-- 需要在仓库 Settings → Secrets 配置 `STATIC_TOKEN`(对 `suconghou/static` 有写权限的 PAT),否则发布步骤无权限推送
+推送到 `master`/`main`(或手动触发 "Build and publish")时,GitHub Actions 自动:
 
-本地手动发布到其他静态服务时,同样通过 `VITE_BASE` 指定资源根地址,如:
+1. `pnpm build` 构建,`VITE_BASE=/`(站点位于 Pages 根目录)
+2. 把 `dist/` 同步到 `suconghou/ustream-pages` 仓库根目录
+3. 提交推送 → Cloudflare Pages 自动构建部署
+
+需要在仓库 Settings → Secrets 配置 `PAGES_TOKEN`(对 `suconghou/ustream-pages` 有写权限的 PAT),
+否则发布步骤无权限推送。
+
+同步时只覆盖构建产物,部署仓库中的 `functions/`(Pages Functions,提供同源解析与图片代理)与
+`README.MD` 会被保留;上一轮构建残留的指纹文件由 `rsync --delete` 清理。
+
+部署到其他静态服务时,通过 `VITE_BASE` 指定资源根地址即可,如:
 
 ```bash
 VITE_BASE='https://assets.suconghou.cn/u2web/static/dist/' pnpm build

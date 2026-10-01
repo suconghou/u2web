@@ -6,17 +6,18 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: publish-static
+  group: publish-pages
   cancel-in-progress: true
+
+env:
+  # 站点部署在 Cloudflare Pages 根目录,故资源引用基于 '/'
+  VITE_BASE: /
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      SITE_DIR: ${{ github.event.repository.name }}
-      VITE_BASE: https://static.feds.club/${{ github.event.repository.name }}/
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -38,28 +39,50 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Checkout static
+      - name: Guard publish secret
+        # 未配置 PAGES_TOKEN 时只做构建校验,跳过发布,避免每次推送都是失败运行
+        id: guard
+        env:
+          PAGES_TOKEN: ${{ secrets.PAGES_TOKEN }}
+        run: |
+          if [ -z "$PAGES_TOKEN" ]; then
+            echo "::warning::未配置 PAGES_TOKEN,本次仅构建校验,已跳过发布到 suconghou/ustream-pages"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout pages repo
+        if: steps.guard.outputs.skip != 'true'
         uses: actions/checkout@v6
         with:
-          repository: suconghou/static
-          token: ${{ secrets.STATIC_TOKEN }}
-          path: static-repo
-          ref: main
+          repository: suconghou/ustream-pages
+          # 需为对该仓库有写权限的 PAT
+          token: ${{ secrets.PAGES_TOKEN }}
+          path: pages-repo
+          ref: master
 
-      - name: Sync dist into static/${{ env.SITE_DIR }}
+      - name: Sync dist into pages repo
+        if: steps.guard.outputs.skip != 'true'
+        # --delete 清理上一轮构建残留的指纹文件。
+        # functions/ 是 Pages Functions(同源解析与图片代理),README.MD 是部署仓库说明,
+        # 两者均不在 dist 中,必须排除以免被删除;
+        # 旧的 play.html 不在 dist 中,会被 --delete 自动移除,改由 SPA 的 /play 路由承载。
         run: |
-          mkdir -p "static-repo/${SITE_DIR}"
-          rsync -a --delete --exclude '.git' dist/ "static-repo/${SITE_DIR}/"
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude 'functions' \
+            --exclude 'README.MD' \
+            dist/ pages-repo/
 
       - name: Commit and push
-        working-directory: static-repo
+        if: steps.guard.outputs.skip != 'true'
+        working-directory: pages-repo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A -- "${SITE_DIR}"
+          git add -A
           if git diff --cached --quiet; then
             echo "No changes to publish"
             exit 0
           fi
-          git commit -m "chore: update ${SITE_DIR} (${GITHUB_SHA::7})"
+          git commit -m "chore: update site from u2web@${GITHUB_SHA::7}"
           git push
