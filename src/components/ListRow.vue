@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import type { VideoItem } from '@/types'
 import { imgSrc, defaultImg } from '@/service'
-import { timeBefore } from '@/utils'
+import { timeBefore, videoIdOf } from '@/utils'
 
 const { t } = useI18n()
 
@@ -25,14 +25,13 @@ const loaderr = ref(false)
 
 const v = computed(() => props.item.snippet ?? {})
 
-const videoId = computed(() => {
-  if (v.value.resourceId?.videoId) return v.value.resourceId.videoId
-  const iid = props.item.id
-  if (typeof iid === 'object') return iid?.videoId ?? ''
-  if (typeof iid === 'string' && props.video) return iid
+/** 部分播放列表条目既无 resourceId 也无可用 id,从缩略图 URL 兜底提取 */
+const thumbFallback = (): string => {
   const m = v.value.thumbnails?.high?.url?.match(/\/([\w-]{5,20})\//)
   return m ? m[1] : ''
-})
+}
+
+const videoId = computed(() => videoIdOf(props.item, props.video) || thumbFallback())
 
 const src = computed(() => (videoId.value ? imgSrc(videoId.value) : ''))
 

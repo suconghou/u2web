@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { PlaylistEntry } from './types'
+import type { VideoItem } from '@/types'
 import { playlistItems } from '@/service'
 
 const { t } = useI18n()
@@ -19,25 +20,36 @@ const emit = defineEmits<{ (e: 'play', id: string): void }>()
 const curr = ref<PlaylistEntry | null>(null)
 const lists = ref<PlaylistEntry[]>([])
 
+/** 分页拉取上限:防止后端返回重复的 nextPageToken 时无限循环 */
+const MAX_PAGES = 20
+/** 请求序号:列表切换或卸载后丢弃在途请求 */
+let seq = 0
+let stopped = false
+
 async function initList(listId: string) {
+  const cur = ++seq
+  const seen = new Set(lists.value.map((i) => i.v))
   let pageToken: string | undefined
-  for (;;) {
+  for (let page = 0; page < MAX_PAGES; page++) {
+    if (cur !== seq || stopped) return
     const { ok, data } = await playlistItems(listId, pageToken, 50)
+    if (cur !== seq || stopped) return
     if (!ok) return
-    push(data.items)
+    push(data.items, seen)
     pageToken = data.nextPageToken
     if (!pageToken) break
   }
 }
 
-function push(items: import('@/types').VideoItem[]) {
+function push(items: VideoItem[], seen: Set<string>) {
   const mapped = items
     .filter((item) => item.contentDetails?.videoPublishedAt)
     .map((item) => ({
       v: item.contentDetails?.videoId ?? '',
       title: item.snippet?.title ?? '',
     }))
-    .filter((x) => x.v)
+    .filter((x) => x.v && !seen.has(x.v))
+  for (const m of mapped) seen.add(m.v)
   lists.value = [...lists.value, ...mapped]
 }
 
@@ -59,6 +71,10 @@ onMounted(() => {
   } else if (props.playlist) {
     initList(props.playlist)
   }
+})
+onUnmounted(() => {
+  stopped = true
+  seq++
 })
 
 defineExpose({ playNext })

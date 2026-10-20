@@ -77,11 +77,15 @@ const filter = <T>(res: { status: number; statusText: string; data: T & { code?:
   return { ok: false, data: res.data, status: res.status }
 }
 
-const httpCreate = (baseURL: string, timeout = 60e3): AxiosInstance => {
+const httpCreate = (timeout = 60e3): AxiosInstance => {
   const instance = axios.create({
-    baseURL,
     timeout,
     validateStatus: () => true,
+  })
+  // baseURL 按请求读取,使设置页改动即时生效;单次请求自带 baseURL 时(如多镜像重试)优先
+  instance.interceptors.request.use((config) => {
+    config.baseURL = config.baseURL || apiBaseURL()
+    return config
   })
   instance.interceptors.response.use(
     filter as unknown as (res: import('axios').AxiosResponse) => import('axios').AxiosResponse,
@@ -90,7 +94,7 @@ const httpCreate = (baseURL: string, timeout = 60e3): AxiosInstance => {
   return instance
 }
 
-export const http = httpCreate(apiBaseURL())
+export const http = httpCreate()
 
 export const mostPopularVideos = (regionCode = 'HK', videoCategoryId = 1) =>
   http.get<ListResponse, ApiResult<ListResponse>>('/videos', {

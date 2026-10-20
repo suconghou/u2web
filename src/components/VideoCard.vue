@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import type { VideoItem } from '@/types'
 import { imgSrc, defaultImg } from '@/service'
-import { timeBefore, formatCount, formatDuration } from '@/utils'
+import { timeBefore, formatCount, formatDuration, videoIdOf } from '@/utils'
 
 const { t } = useI18n()
 const props = defineProps<{ item: VideoItem }>()
@@ -14,12 +14,7 @@ const loaderr = ref(false)
 
 const v = computed(() => props.item.snippet ?? {})
 
-const id = computed(() => {
-  if (v.value.resourceId?.videoId) return v.value.resourceId.videoId
-  const iid = props.item.id
-  if (typeof iid === 'object') return iid?.videoId ?? ''
-  return iid ?? ''
-})
+const id = computed(() => videoIdOf(props.item))
 
 const src = computed(() => imgSrc(id.value))
 const duration = computed(() => formatDuration(props.item.contentDetails?.duration))

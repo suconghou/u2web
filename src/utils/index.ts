@@ -3,9 +3,20 @@ import type { VideoItem } from '@/types'
 
 const t = (key: string, params?: Record<string, unknown>) => i18n.global.t(key, params ?? {})
 
-/** 条目的视频 ID:id 为字符串时直接取,否则取嵌套的 videoId */
-export const videoIdOf = (item: VideoItem): string =>
-  typeof item.id === 'string' ? item.id : (item.id?.videoId ?? '')
+/**
+ * 条目的视频 ID。
+ * 播放列表条目(snippet.resourceId)优先;其次取 id 或嵌套的 videoId。
+ * isVideoEntry 表示该条目的 id 本身就是视频 ID(播放列表里的视频条目),
+ * 对播放列表本身应传 false,否则会把列表 ID 当成视频 ID
+ */
+export const videoIdOf = (item: VideoItem, isVideoEntry = true): string => {
+  const rid = item.snippet?.resourceId?.videoId
+  if (rid) return rid
+  const iid = item.id
+  if (typeof iid === 'object') return iid?.videoId ?? ''
+  if (typeof iid === 'string') return isVideoEntry ? iid : ''
+  return ''
+}
 
 /** 发布时间: 如 "3年前" / "3y ago" / "3년 전" / "3年前" */
 export const timeBefore = (time?: string): string => {

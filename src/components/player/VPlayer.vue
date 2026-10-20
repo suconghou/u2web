@@ -215,6 +215,8 @@ function init() {
         emit('loadersready', loaders as Fastloader[], dispatchs as unknown[])
       })
       loader.value.listen('error', (err) => {
+        // 界面只展示 message,完整堆栈留在控制台便于排查
+        console.error(err)
         video.value.error = err
         loader.value?.pause()
       })
@@ -314,16 +316,11 @@ function onPlayEnd() {
     el.currentTime = 0
     video.value.currentTime = 0
   } else {
-    const vol = el.volume
-    el.autoplay = false
+    // 回到首帧并停住:音量与 autoplay 在本流程中未被改动,无需保存恢复
     el.currentTime = 0
     video.value.currentTime = 0
-    setTimeout(() => el.pause(), 100)
-    setTimeout(() => {
-      el.pause()
-      el.volume = vol
-      setTimeout(() => (paused.value = true), 120)
-    }, 180)
+    el.pause()
+    paused.value = true
     if (props.audio) emit('ended', props.playerInfo)
   }
   loader.value?.seekTo(1)
@@ -793,7 +790,7 @@ onBeforeUnmount(() => {
             <p>{{ t('player.unsupported') }}</p>
           </template>
           <template v-else>
-            <p class="break-all">{{ video.error instanceof Error ? video.error.stack || video.error.message : video.error }}</p>
+            <p class="break-all">{{ video.error instanceof Error ? video.error.message : video.error }}</p>
             <p>{{ t('player.playError') }}</p>
             <button
               class="mt-3 rounded bg-white/20 px-3 py-1 text-xs hover:bg-white/30"
