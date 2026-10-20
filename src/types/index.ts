@@ -1,6 +1,4 @@
-// ---------------------------------------------------------------------------
 // 数据模型:与上游 API (r.suconghou.cn/video/api/v3 及同类实现) 返回结构对应
-// ---------------------------------------------------------------------------
 
 export interface Thumbnail {
   url: string
@@ -71,9 +69,7 @@ export interface ListResponse<T = VideoItem> {
   msg?: string
 }
 
-// ---------------------------------------------------------------------------
 // 播放器:视频解析服务返回的流信息与 fastloadjs 加载单元
-// ---------------------------------------------------------------------------
 
 export interface StreamItem {
   itag: number
@@ -101,7 +97,6 @@ export interface PlayerInfo {
 export interface LoadItem {
   itag: number
   quality: string
-  /** 主请求地址 */
   req: string
   init: { start: number; end: number }
   index: { start: number; end: number }
@@ -109,7 +104,6 @@ export interface LoadItem {
   len: number
   /** 资源标识:videoId:itag,启用 P2P 时作为 swarmId */
   meta: string
-  /** 多源镜像地址 */
   mirrors: string[]
 }
 
@@ -140,11 +134,8 @@ export interface FastloadConfig {
   retry?: number
   /** 单路流的源 URL(顶层实例不下载,由 attach 的 streams 逐路提供) */
   req?: string
-  /** 流标识 */
-  meta?: string
   /** P2P 信令服务地址;留空即纯 HTTP 下载(引擎即以此判断是否启用 P2P) */
   tracker?: string
-  /** 多源镜像地址 */
   mirrors?: string[]
   /** WebRTC 配置,启用 P2P 时提供 iceServers */
   rtcConf?: RTCConfiguration
