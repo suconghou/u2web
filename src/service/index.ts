@@ -24,7 +24,8 @@ export const ICE_SERVERS: RTCIceServer[] = [
   { urls: 'stun:stun.linphone.org:3478' },
 ]
 
-export const defaultImg = 'https://assets.suconghou.cn/defaultImg.png'
+/** 缩略图占位图,随构建产物发布,支持 VITE_BASE 子路径部署 */
+export const defaultImg = import.meta.env.BASE_URL + 'defaultImg.png'
 
 /**
  * P2P 信令服务地址:localStorage `ws`(设置页)优先,未配置时用 DEFAULT_SIGNAL。
